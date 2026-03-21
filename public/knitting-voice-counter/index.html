@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="description" content="声だけで操作できるハンズフリー編み物カウンター。段数・目数を音声コマンドで管理できます。">
+  <title>🧶 音声編み物カウンター v1.1</title>
+  <style>
+    /* ===== Reset & Base ===== */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&family=Noto+Sans+JP:wght@400;600;700;900&display=swap');
+
+    :root {
+      --bg-primary: #0a0a1a;
+      --bg-card: #12122a;
+      --bg-card-glow: #1a1a3e;
+      --accent-cyan: #00e5ff;
+      --accent-magenta: #ff2daa;
+      --accent-gold: #ffd700;
+      --accent-green: #00ff88;
+      --accent-orange: #ff6b35;
+      --accent-red: #ff3b5c;
+      --text-primary: #f0f0ff;
+      --text-secondary: #8888aa;
+      --border-color: rgba(255, 255, 255, 0.06);
+      --glass-bg: rgba(18, 18, 42, 0.85);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --radius: 20px;
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    html,
+    body {
+      height: 100%;
+      font-family: 'Noto Sans JP', 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      background:
+        radial-gradient(ellipse at 20% 0%, rgba(0, 229, 255, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 100%, rgba(255, 45, 170, 0.06) 0%, transparent 50%),
+        var(--bg-primary);
+    }
+
+    /* ===== App Container ===== */
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100dvh;
+      max-width: 480px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 12px 16px env(safe-area-inset-bottom, 12px);
+      gap: 10px;
+    }
+
+    /* ===== Row Card (段数) ===== */
+    .row-section {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 14px 20px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s ease;
+      flex-shrink: 0;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .row-section:active {
+      background: rgba(0, 229, 255, 0.12);
+    }
+
+    .row-section .label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-bottom: 4px;
+    }
+
+    .row-section .tap-hint {
+      font-size: 10px;
+      color: var(--text-secondary);
+      opacity: 0.5;
+      margin-top: 2px;
+      letter-spacing: 1px;
+    }
+
+    .row-section .value {
+      font-size: 56px;
+      font-weight: 900;
+      color: var(--accent-cyan);
+      line-height: 1.1;
+      text-shadow: 0 0 30px rgba(0, 229, 255, 0.3);
+      transition: transform 0.3s ease;
+    }
+
+    .row-section.flash {
+      animation: rowFlash 0.6s ease;
+    }
+
+    @keyframes rowFlash {
+      0% {
+        background: var(--glass-bg);
+      }
+
+      20% {
+        background: rgba(0, 229, 255, 0.25);
+        box-shadow: 0 0 60px rgba(0, 229, 255, 0.3);
+      }
+
+      100% {
+        background: var(--glass-bg);
+      }
+    }
+
+    /* ===== Stitch Counter (目数) ===== */
+    .stitch-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      position: relative;
+      overflow: hidden;
+      min-height: 0;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .stitch-section:active {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .stitch-section .tap-hint {
+      font-size: 11px;
+      color: var(--text-secondary);
+      opacity: 0.45;
+      margin-top: 8px;
+      letter-spacing: 1px;
+    }
+
+    .stitch-section .subcount-hint {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent-gold);
+      margin-top: 5px;
+      margin-bottom: 2px;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+      display: none;
+    }
+
+    .stitch-section .label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-bottom: 4px;
+    }
+
+    .stitch-section .value {
+      font-size: clamp(60px, min(25vw, 15vh), 180px);
+      font-weight: 900;
+      color: var(--text-primary);
+      line-height: 1;
+      transition: transform 0.2s ease, text-shadow 0.2s ease;
+    }
+
+    .stitch-section .value.pop {
+      animation: stitchPop 0.4s ease;
+    }
+
+    @keyframes stitchPop {
+      0% {
+        transform: scale(1);
+        text-shadow: none;
+      }
+
+      30% {
+        transform: scale(1.15);
+        text-shadow: 0 0 40px rgba(255, 255, 255, 0.6), 0 0 80px rgba(0, 229, 255, 0.3);
+      }
+
+      100% {
+        transform: scale(1);
+        text-shadow: none;
+      }
+    }
+
+    /* ===== Status Labels (編み方) ===== */
+    .status-section {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .status-btn {
+      flex: 1;
+      padding: 12px 6px;
+      border-radius: 14px;
+      background: var(--glass-bg);
+      border: 1.5px solid var(--glass-border);
+      text-align: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    
+    .status-btn:active {
+      transform: scale(0.96);
+    }
+
+    .status-btn.active-koma {
+      color: var(--accent-green);
+      border-color: var(--accent-green);
+      background: rgba(0, 255, 136, 0.1);
+      box-shadow: 0 0 20px rgba(0, 255, 136, 0.15);
+    }
+
+    .status-btn.active-inc {
+      color: var(--accent-gold);
+      border-color: var(--accent-gold);
+      background: rgba(255, 215, 0, 0.1);
+      box-shadow: 0 0 20px rgba(255, 215, 0, 0.15);
+    }
+
+    .status-btn.active-dec {
+      color: var(--accent-red);
+      border-color: var(--accent-red);
+      background: rgba(255, 59, 92, 0.1);
+      box-shadow: 0 0 20px rgba(255, 59, 92, 0.15);
+    }
+
+    /* ===== Controls ===== */
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .ctrl-btn {
+      flex: 1;
+      padding: 14px 10px;
+      border-radius: 16px;
+      border: none;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .ctrl-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* Mic Button */
+    .mic-btn {
+      background: linear-gradient(135deg, #1a1a3e, #12122a);
+      color: var(--text-secondary);
+      border: 1.5px solid var(--glass-border);
+    }
+
+    .mic-btn.unsupported {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .mic-btn.listening {
+      background: linear-gradient(135deg, rgba(0, 229, 255, 0.2), rgba(255, 45, 170, 0.15));
+      color: var(--accent-cyan);
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 25px rgba(0, 229, 255, 0.2);
+      animation: micPulse 1.5s ease-in-out infinite;
+    }
+
+
+
+    /* ===== Footer Links ===== */
+    .footer-links {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .footer-link {
+      flex: 1;
+      padding: 10px 4px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--glass-border);
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .footer-link:active {
+      transform: scale(0.96);
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+
+    .footer-link span {
+      font-size: 16px;
+    }
+
+    @keyframes micPulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 25px rgba(0, 229, 255, 0.2);
+      }
+
+      50% {
+        box-shadow: 0 0 40px rgba(0, 229, 255, 0.35);
+      }
+    }
+
+    .mic-btn .mic-icon {
+      font-size: 20px;
+    }
+
+    /* Undo Button */
+    .undo-btn {
+      background: linear-gradient(135deg, #1a1a3e, #12122a);
+      color: var(--text-secondary);
+      border: 1.5px solid var(--glass-border);
+      flex: 0.6;
+    }
+
+    .undo-btn:active {
+      border-color: var(--accent-orange);
+      color: var(--accent-orange);
+    }
+
+    /* Reset Button */
+    .reset-btn {
+      background: linear-gradient(135deg, #1a1a3e, #12122a);
+      color: var(--text-secondary);
+      border: 1.5px solid var(--glass-border);
+      flex: 0.6;
+    }
+
+    .reset-btn:active {
+      border-color: var(--accent-red);
+      color: var(--accent-red);
+    }
+
+    /* ===== Voice Feedback ===== */
+    .voice-feedback {
+      position: fixed;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 229, 255, 0.15);
+      border: 1px solid rgba(0, 229, 255, 0.3);
+      color: var(--accent-cyan);
+      padding: 8px 20px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 600;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      z-index: 100;
+      white-space: nowrap;
+      max-width: 90vw;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .voice-feedback.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ===== History Indicator ===== */
+    .history-count {
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      font-size: 10px;
+      color: var(--text-secondary);
+      opacity: 0.5;
+    }
+
+    /* ===== Toast (Undo feedback) ===== */
+    .toast {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(255, 107, 53, 0.2);
+      border: 1px solid rgba(255, 107, 53, 0.4);
+      color: var(--accent-orange);
+      padding: 10px 24px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 600;
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 200;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ===== Reset Confirm Modal ===== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 500;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-box {
+      background: var(--bg-card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 28px 24px;
+      text-align: center;
+      max-width: 320px;
+      width: 90%;
+    }
+
+    .modal-box h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .modal-box p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 20px;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .modal-actions button {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      border: none;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .modal-cancel {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-secondary);
+    }
+
+    .modal-confirm {
+      background: linear-gradient(135deg, var(--accent-red), #cc2040);
+      color: #fff;
+    }
+
+    /* ===== Wake Lock Indicator ===== */
+    .wake-indicator {
+      position: fixed;
+      top: 8px;
+      right: 12px;
+      font-size: 10px;
+      color: var(--text-secondary);
+      opacity: 0.4;
+      z-index: 50;
+    }
+
+    /* ===== Speech Support Notice ===== */
+    .speech-notice {
+      position: fixed;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: var(--text-secondary);
+      opacity: 0.45;
+      z-index: 50;
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    /* ===== Navi Panel ===== */
+    .navi-panel {
+      background: rgba(20, 20, 50, 0.4);
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      padding: 10px 16px;
+      flex-shrink: 0;
+      transition: all 0.3s ease;
+    }
+
+    .navi-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navi-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent-magenta);
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Toggle Switch */
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(255,255,255,0.1);
+      transition: .3s;
+      border-radius: 24px;
+      border: 1px solid var(--glass-border);
+    }
+    .toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 2px;
+      bottom: 2px;
+      background-color: var(--text-secondary);
+      transition: .3s;
+      border-radius: 50%;
+    }
+    input:checked + .toggle-slider {
+      background-color: rgba(255, 45, 170, 0.2);
+      border-color: var(--accent-magenta);
+    }
+    input:checked + .toggle-slider:before {
+      transform: translateX(20px);
+      background-color: var(--accent-magenta);
+    }
+
+    .navi-content {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .navi-content.show {
+      display: flex;
+    }
+
+    .navi-pattern-edit {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: rgba(0,0,0,0.3);
+      padding: 6px 8px;
+      border-radius: 12px;
+      border: 1px solid var(--glass-border);
+    }
+
+    .navi-btn {
+      background: rgba(255,255,255,0.08);
+      border: none;
+      color: #fff;
+      border-radius: 8px;
+      width: 28px;
+      height: 28px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .navi-btn:active { background: rgba(255,255,255,0.2); }
+
+    .navi-pattern-text {
+      font-size: 13px;
+      font-weight: 700;
+      width: 60px;
+      text-align: center;
+    }
+
+    .navi-plus {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin: 0 2px;
+    }
+
+    .navi-type-group {
+      display: flex;
+      background: rgba(0,0,0,0.4);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .navi-type-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      padding: 6px 8px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .2s;
+    }
+    .navi-type-btn.active {
+      background: var(--accent-magenta);
+      color: #fff;
+    }
+
+    .navi-progress {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-weight: 600;
+      background: rgba(255, 45, 170, 0.05);
+      padding: 6px;
+      border-radius: 8px;
+    }
+    .navi-progress span {
+      color: var(--accent-cyan);
+      font-size: 16px;
+      font-weight: 900;
+      margin-left: 6px;
+    }
+
+    /* ===== Media Queries for Small Screens ===== */
+    @media (max-height: 700px) {
+      #app {
+        gap: 6px;
+      }
+      .row-section {
+        padding: 8px 16px;
+      }
+      .row-section .value {
+        font-size: 44px;
+      }
+      .stitch-section .value {
+        font-size: clamp(50px, min(25vw, 12vh), 120px);
+      }
+      .status-btn {
+        padding: 8px 6px;
+      }
+      .ctrl-btn {
+        padding: 10px 8px;
+        font-size: 14px;
+      }
+      .footer-links {
+        margin-top: 6px;
+      }
+      .footer-link {
+        padding: 8px 4px;
+        font-size: 10px;
+        gap: 2px;
+      }
+      .footer-link span {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Voice Feedback Bubble -->
+  <div class="voice-feedback" id="voiceFeedback"></div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <!-- Wake Lock Indicator -->
+  <div class="wake-indicator" id="wakeIndicator"></div>
+
+  <!-- Reset Confirm Modal -->
+  <div class="modal-overlay" id="resetModal">
+    <div class="modal-box">
+      <h3>⚠️ リセット確認</h3>
+      <p>すべてのカウンターと状態を初期化します。<br>本当によろしいですか？</p>
+      <div class="modal-actions">
+        <button class="modal-cancel" id="resetCancel" type="button">キャンセル</button>
+        <button class="modal-confirm" id="resetConfirm" type="button">リセット</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- App -->
+  <div id="app">
+
+    <!-- 段数 (Row) -->
+    <div class="row-section" id="rowSection">
+      <div class="label">段　数</div>
+      <div class="value" id="rowValue">1</div>
+      <div class="tap-hint">タップで次の段へ</div>
+    </div>
+
+    <!-- 円編みナビゲーションパネル -->
+    <div class="navi-panel" id="naviPanel">
+      <div class="navi-header">
+        <span class="navi-title">🧶 円編みナビモード</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="naviToggleBtn">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+      <div class="navi-content" id="naviContent">
+        <div class="navi-pattern-edit">
+          <button class="navi-btn" id="naviKomaDec">◀</button>
+          <span class="navi-pattern-text" id="naviPatternText">細編み 1</span>
+          <button class="navi-btn" id="naviKomaInc">▶</button>
+          <span class="navi-plus">＋</span>
+          <div class="navi-type-group">
+            <button class="navi-type-btn active" id="naviTypeInc">増</button>
+            <button class="navi-type-btn" id="naviTypeDec">減</button>
+            <button class="navi-type-btn" id="naviTypeNone">平</button>
+          </div>
+        </div>
+        <div class="navi-progress">
+          現在のループ進捗 <span id="naviLoopStatus">1 / 6</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 目数 (Stitch) -->
+    <div class="stitch-section" id="stitchSection">
+      <div class="label">目　数</div>
+      <div class="value" id="stitchValue">0</div>
+      <div class="subcount-hint" id="subcountHint"></div>
+      <div class="tap-hint">タップで +1</div>
+    </div>
+
+    <!-- 編み方ステータス -->
+    <div class="status-section">
+      <div class="status-btn active-koma" id="statusKoma" data-status="細編み">細編み</div>
+      <div class="status-btn" id="statusInc" data-status="増やし目">増やし目</div>
+      <div class="status-btn" id="statusDec" data-status="減らし目">減らし目</div>
+    </div>
+
+    <!-- コントロール -->
+    <div class="controls">
+      <button class="ctrl-btn mic-btn" id="micBtn" type="button">
+        <span class="mic-icon">🎤</span>
+        <span id="micLabel">マイクON</span>
+      </button>
+      <button class="ctrl-btn undo-btn" id="undoBtn" type="button">↩ 戻る</button>
+      <button class="ctrl-btn reset-btn" id="resetBtn" type="button">🗑 初期化</button>
+    </div>
+
+
+    <!-- フッターリンク (収益化・ヘルプ) -->
+    <div class="footer-links">
+      <a href="#" class="footer-link" id="helpLink">
+        <span>📖</span>
+        使い方
+      </a>
+      <a href="https://www.amazon.co.jp/s?k=%E6%AF%9B%E7%B3%B8&tag=hasuda2907-22" target="_blank" rel="noopener noreferrer" class="footer-link">
+        <span>🛒</span>
+        Amazonで探す
+      </a>
+      <a href="https://hb.afl.rakuten.co.jp/hgc/5170c30d.12d5cbf7.5170c30e.2b43a087/?pc=https%3A%2F%2Fsearch.rakuten.co.jp%2Fsearch%2Fmall%2F%25E6%25AF%259B%25E7%25B3%25B8%2F" target="_blank" rel="noopener noreferrer" class="footer-link">
+        <span>🛍️</span>
+        楽天で探す
+      </a>
+    </div>
+
+  </div>
+
+  <!-- Speech Support Notice -->
+  <div class="speech-notice" id="speechNotice"></div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      // ===== State =====
+      const STORAGE_KEY = 'knitting_counter_v1';
+
+      let state = {
+        row: 1,
+        stitch: 0,
+        subCount: 0, // 0: clear/2回目終了, 1: 1回目終了
+        status: '細編み', // '細編み' | '増やし目' | '減らし目'
+        naviMode: false,
+        naviKoma: 1,
+        naviType: 'inc', // 'inc' | 'dec' | 'none'
+        stitchInRow: 0
+      };
+
+      let history = []; // Array of previous states for undo
+      const MAX_HISTORY = 50;
+
+      // ===== DOM Elements =====
+      const rowValueEl = document.getElementById('rowValue');
+      const stitchValueEl = document.getElementById('stitchValue');
+      const subcountHintEl = document.getElementById('subcountHint');
+      const rowSectionEl = document.getElementById('rowSection');
+      const stitchSectionEl = document.getElementById('stitchSection');
+      const statusKoma = document.getElementById('statusKoma');
+      const statusInc = document.getElementById('statusInc');
+      const statusDec = document.getElementById('statusDec');
+      const micBtn = document.getElementById('micBtn');
+      const micLabel = document.getElementById('micLabel');
+      const undoBtn = document.getElementById('undoBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const voiceFeedback = document.getElementById('voiceFeedback');
+      const toastEl = document.getElementById('toast');
+      const wakeIndicator = document.getElementById('wakeIndicator');
+      const resetModal = document.getElementById('resetModal');
+      const resetCancel = document.getElementById('resetCancel');
+      const resetConfirm = document.getElementById('resetConfirm');
+      const helpLink = document.getElementById('helpLink');
+
+      // Navi DOM
+      const naviPanel = document.getElementById('naviPanel');
+      const naviToggleBtn = document.getElementById('naviToggleBtn');
+      const naviContent = document.getElementById('naviContent');
+      const naviKomaDec = document.getElementById('naviKomaDec');
+      const naviKomaInc = document.getElementById('naviKomaInc');
+      const naviPatternText = document.getElementById('naviPatternText');
+      const naviTypeInc = document.getElementById('naviTypeInc');
+      const naviTypeDec = document.getElementById('naviTypeDec');
+      const naviTypeNone = document.getElementById('naviTypeNone');
+      const naviLoopStatus = document.getElementById('naviLoopStatus');
+
+      // ===== Audio Context for Beep =====
+      let audioCtx = null;
+
+      function getAudioCtx() {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        return audioCtx;
+      }
+
+      function playBeep() {
+        try {
+          const ctx = getAudioCtx();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(1200, ctx.currentTime);
+          gain.gain.setValueAtTime(0.3, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
+          osc.start(ctx.currentTime);
+          osc.stop(ctx.currentTime + 0.12);
+        } catch (e) {
+          // fallback: vibrate
+          tryVibrate();
+        }
+      }
+
+
+
+      // ===== LocalStorage =====
+      function saveState() {
+        const data = { state, history };
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        } catch (e) { /* ignore */ }
+      }
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const data = JSON.parse(raw);
+            if (data.state) state = data.state;
+            if (data.history) history = data.history;
+          }
+        } catch (e) { /* ignore */ }
+      }
+
+      // ===== Render =====
+      function render() {
+        rowValueEl.textContent = state.row;
+        stitchValueEl.textContent = state.stitch;
+
+        if (state.status === '増やし目') {
+          // 増やし目モード時は、subCount=0なら「0/2回目」、subCount=1なら「1/2回目」
+          subcountHintEl.textContent = `【増やし目: ${state.subCount}/2回目】`;
+          subcountHintEl.style.display = 'block';
+        } else {
+          subcountHintEl.style.display = 'none';
+        }
+
+        // Status labels
+        statusKoma.className = 'status-btn' + (state.status === '細編み' ? ' active-koma' : '');
+        statusInc.className = 'status-btn' + (state.status === '増やし目' ? ' active-inc' : '');
+        statusDec.className = 'status-btn' + (state.status === '減らし目' ? ' active-dec' : '');
+
+        // Navi Render
+        naviToggleBtn.checked = state.naviMode;
+        if (state.naviMode) {
+          naviContent.classList.add('show');
+          naviPanel.style.borderColor = 'var(--accent-magenta)';
+        } else {
+          naviContent.classList.remove('show');
+          naviPanel.style.borderColor = 'transparent';
+        }
+
+        naviPatternText.textContent = `細編み ${state.naviKoma}`;
+        naviTypeInc.className = 'navi-type-btn' + (state.naviType === 'inc' ? ' active' : '');
+        naviTypeDec.className = 'navi-type-btn' + (state.naviType === 'dec' ? ' active' : '');
+        naviTypeNone.className = 'navi-type-btn' + (state.naviType === 'none' ? ' active' : '');
+
+        const loopLength = state.naviKoma + (state.naviType !== 'none' ? 2 : 0);
+        if (loopLength > 0) {
+          const currentLoop = Math.floor(state.stitchInRow / loopLength) + 1;
+          naviLoopStatus.textContent = `${Math.min(currentLoop, 6)} / 6`;
+        } else {
+          naviLoopStatus.textContent = `- / 6`;
+        }
+      }
+
+      // ===== Push to History (for Undo) =====
+      function pushHistory() {
+        history.push({ ...state });
+        if (history.length > MAX_HISTORY) history.shift();
+      }
+
+      // ===== Navi Functions =====
+      function updateNaviAutoPattern(row) {
+        if (!state.naviMode) return;
+        if (row === 1) {
+          state.naviKoma = 1;
+          state.naviType = 'none';
+        } else if (row === 2) {
+          state.naviKoma = 0;
+          state.naviType = 'inc';
+        } else {
+          state.naviKoma = row - 2;
+          state.naviType = 'inc';
+        }
+        updateNaviProgress();
+      }
+
+      function updateNaviProgress() {
+        if (!state.naviMode) return;
+        const loopLength = state.naviKoma + (state.naviType !== 'none' ? 2 : 0);
+        if (loopLength === 0) return;
+
+        const currentLoop = Math.floor(state.stitchInRow / loopLength);
+        const rem = state.stitchInRow % loopLength;
+
+        // 次の段への自動送り (6ループ完了時)
+        if (currentLoop >= 6 && rem === 0 && state.stitchInRow > 0) {
+          setTimeout(() => {
+            showFeedback('段が完了しました！次へ進みます');
+            cmdTsugi();
+          }, 400);
+          return;
+        }
+
+        // 次のステータス（編み方）を決める
+        let nextStatus = '細編み';
+        if (rem >= state.naviKoma) {
+          nextStatus = state.naviType === 'inc' ? '増やし目' : '減らし目';
+        }
+        state.status = nextStatus;
+      }
+
+      // ===== Commands =====
+      function cmdHai() {
+        pushHistory();
+
+        // 常に目数は+1する
+        state.stitch += 1;
+        state.stitchInRow = (state.stitchInRow || 0) + 1;
+
+        // 増やし目の場合のサブカウント（1/2か2/2）の切り替え
+        if (state.status === '増やし目') {
+          // 初期状態(0)からは1へ。1からは2へ。2からは再び1へ。
+          if (state.subCount === 0 || state.subCount === 2) {
+            state.subCount = 1;
+          } else {
+            state.subCount = 2;
+          }
+        } else {
+          state.subCount = 0;
+        }
+
+        // ナビモード更新
+        if (state.naviMode) {
+          updateNaviProgress();
+        }
+
+        saveState();
+        render();
+        // Animation
+        stitchValueEl.classList.remove('pop');
+        void stitchValueEl.offsetWidth; // reflow
+        stitchValueEl.classList.add('pop');
+        playBeep();
+      }
+
+      function cmdTsugi() {
+        pushHistory();
+        state.row += 1;
+        state.stitch = 0;
+        state.subCount = 0;
+        state.stitchInRow = 0;
+
+        // ナビモード更新
+        if (state.naviMode) {
+          updateNaviAutoPattern(state.row);
+        }
+
+        saveState();
+        render();
+        // Flash animation
+        rowSectionEl.classList.remove('flash');
+        void rowSectionEl.offsetWidth;
+        rowSectionEl.classList.add('flash');
+        playBeep();
+      }
+
+      function cmdSetStatus(newStatus) {
+        pushHistory();
+        state.status = newStatus;
+        if (newStatus !== '増やし目') {
+          state.subCount = 0; // 他のモードになったらサブカウントリセット
+        }
+        saveState();
+        render();
+      }
+
+      function cmdUndo() {
+        if (history.length === 0) {
+          showToast('戻せる操作がありません');
+          return;
+        }
+        state = history.pop();
+        saveState();
+        render();
+        showToast('↩ 1つ戻しました');
+      }
+
+      function cmdReset() {
+        state = { 
+          row: 1, stitch: 0, status: '細編み', subCount: 0,
+          naviMode: false, naviKoma: 1, naviType: 'inc', stitchInRow: 0
+        };
+        history = [];
+        saveState();
+        render();
+        showToast('🗑 すべてリセットしました');
+      }
+
+      // ===== Toast =====
+      let toastTimer = null;
+      function showToast(msg) {
+        toastEl.textContent = msg;
+        toastEl.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2000);
+      }
+
+      // ===== Voice Feedback Bubble =====
+      let feedbackTimer = null;
+      function showFeedback(text) {
+        voiceFeedback.textContent = '🎙 ' + text;
+        voiceFeedback.classList.add('show');
+        clearTimeout(feedbackTimer);
+        feedbackTimer = setTimeout(() => voiceFeedback.classList.remove('show'), 2500);
+      }
+
+      // ===== Reset Modal =====
+      resetBtn.addEventListener('click', () => {
+        resetModal.classList.add('show');
+      });
+      resetCancel.addEventListener('click', () => {
+        resetModal.classList.remove('show');
+      });
+      resetConfirm.addEventListener('click', () => {
+        resetModal.classList.remove('show');
+        cmdReset();
+      });
+
+      // ===== Help Link (使い方) =====
+      helpLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        alert('【使い方】\n\n・マイクボタンを押すと音声認識が開始します。\n・画面の「段数」や「目数」エリアを直接タップしてもカウントできます！\n\n【基本の音声コマンド】\n・「はい」： 目数を+1する\n・「次」： 次の段へ進む\n・「戻して」「間違えた」： 1つ前の操作を取り消す\n・「細編み」「増やし目」「減らし目」： モードを手動で切り替える\n\n【円編みナビモード】\nON（ピンク色）にすると、段数から推測して次の編み方（「増やし目」など）を自動でナビゲートしてくれます。');
+      });
+
+      // ===== Status Buttons (Tap to switch) =====
+      statusKoma.addEventListener('click', () => {
+        getAudioCtx();
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        cmdSetStatus('細編み');
+      });
+      statusInc.addEventListener('click', () => {
+        getAudioCtx();
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        cmdSetStatus('増やし目');
+      });
+      statusDec.addEventListener('click', () => {
+        getAudioCtx();
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        cmdSetStatus('減らし目');
+      });
+
+      // ===== Undo Button =====
+      undoBtn.addEventListener('click', cmdUndo);
+
+      // ===== Tap-to-Count =====
+      stitchSectionEl.addEventListener('click', () => {
+        // Initialize AudioContext on first tap
+        getAudioCtx();
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        cmdHai();
+      });
+
+      rowSectionEl.addEventListener('click', () => {
+        getAudioCtx();
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        cmdTsugi();
+      });
+
+      // ===== Navi Events =====
+      naviToggleBtn.addEventListener('change', (e) => {
+        pushHistory();
+        state.naviMode = e.target.checked;
+        if (state.naviMode) {
+          updateNaviAutoPattern(state.row);
+        }
+        saveState();
+        render();
+      });
+
+      naviKomaDec.addEventListener('click', () => {
+        if (state.naviKoma > 0) {
+          pushHistory();
+          state.naviKoma -= 1;
+          updateNaviProgress();
+          saveState();
+          render();
+        }
+      });
+      naviKomaInc.addEventListener('click', () => {
+        pushHistory();
+        state.naviKoma += 1;
+        updateNaviProgress();
+        saveState();
+        render();
+      });
+      naviTypeInc.addEventListener('click', () => {
+        pushHistory();
+        state.naviType = 'inc';
+        updateNaviProgress();
+        saveState();
+        render();
+      });
+      naviTypeDec.addEventListener('click', () => {
+        pushHistory();
+        state.naviType = 'dec';
+        updateNaviProgress();
+        saveState();
+        render();
+      });
+      naviTypeNone.addEventListener('click', () => {
+        pushHistory();
+        state.naviType = 'none';
+        updateNaviProgress();
+        saveState();
+        render();
+      });
+
+      // ===== Speech Recognition =====
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const speechSupported = !!SpeechRecognition;
+      const speechNotice = document.getElementById('speechNotice');
+      let recognition = null;
+      let isListening = false;
+      let restartAttempts = 0;
+      let lastMatchTime = 0; // 短時間連続発火の保険用
+      let lastMatchIndex = -1; // 同一resultIndexからの重複発火防止用
+      const MAX_RESTART_ATTEMPTS = 10;
+
+      // Show speech support notice
+      if (!speechSupported) {
+        speechNotice.textContent = '⚠ このブラウザは音声認識に非対応です（タップで操作できます）';
+        micBtn.classList.add('unsupported');
+        micLabel.textContent = '非対応';
+      } else if (location.protocol === 'file:') {
+        speechNotice.textContent = '⚠ 音声認識にはHTTPSまたはlocalhostが必要です';
+      }
+
+      function matchCommand(transcript, resultIndex) {
+        // 同じ音声ブロック（resultIndex）ですでにコマンドを実行済みの場合は無視
+        if (resultIndex === lastMatchIndex) return false;
+
+        // 短時間の連続発火を防ぐ（1.5秒から500msに短縮）
+        const now = Date.now();
+        if (now - lastMatchTime < 500) return false;
+
+        const t = transcript.trim().toLowerCase();
+        let matched = false;
+
+        // 「はい」
+        if (t.includes('はい') || t === 'はい') {
+          showFeedback('「はい」→ 目数+1');
+          cmdHai();
+          matched = true;
+        }
+        // 「次」
+        else if (t.includes('次') || t.includes('つぎ')) {
+          showFeedback('「次」→ 次の段へ');
+          cmdTsugi();
+          matched = true;
+        }
+        // 「増やし目」
+        else if (t.includes('増やし目') || t.includes('ふやしめ') || t.includes('増やし')) {
+          showFeedback('「増やし目」に変更');
+          cmdSetStatus('増やし目');
+          matched = true;
+        }
+        // 「減らし目」
+        else if (t.includes('減らし目') || t.includes('へらしめ') || t.includes('減らし')) {
+          showFeedback('「減らし目」に変更');
+          cmdSetStatus('減らし目');
+          matched = true;
+        }
+        // 「細編み」
+        else if (t.includes('細編み') || t.includes('こまあみ') || t.includes('こま編み')) {
+          showFeedback('「細編み」に変更');
+          cmdSetStatus('細編み');
+          matched = true;
+        }
+        // 「戻して」「間違えた」
+        else if (t.includes('戻して') || t.includes('もどして') || t.includes('間違えた') || t.includes('まちがえた') || t.includes('戻す')) {
+          showFeedback('↩ 1つ戻します');
+          cmdUndo();
+          matched = true;
+        }
+
+        if (matched) {
+          lastMatchTime = now;
+          lastMatchIndex = resultIndex; // 実行したindexを記録
+        }
+
+        return matched;
+      }
+
+      async function startListening() {
+        if (!speechSupported) {
+          showToast('お使いのブラウザは音声認識に対応していません');
+          return;
+        }
+
+        if (location.protocol === 'file:') {
+          showToast('音声認識にはHTTPSまたはlocalhostが必要です');
+          return;
+        }
+
+        // 即座にUIをフィードバック
+        micBtn.classList.add('listening');
+        micLabel.textContent = '準備中...';
+
+        // マイク権限を事前に取得
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          // 権限取得成功。ストリームは不要なので停止
+          stream.getTracks().forEach(track => track.stop());
+        } catch (e) {
+          console.warn('Microphone permission denied:', e);
+          if (e.name === 'NotAllowedError' || e.name === 'PermissionDeniedError') {
+            showToast('🎤 マイクの使用を許可してください（ブラウザまたはmacOSの設定）');
+          } else if (e.name === 'NotFoundError') {
+            showToast('🎤 マイクが見つかりません。デバイスを確認してください');
+          } else {
+            showToast('🎤 マイクの初期化に失敗: ' + e.message);
+          }
+          micBtn.classList.remove('listening');
+          micLabel.textContent = 'マイクON';
+          return;
+        }
+
+        if (recognition) {
+          try { recognition.abort(); } catch (e) { /* ignore */ }
+        }
+
+        restartAttempts = 0;
+        isListening = true;
+
+        recognition = new SpeechRecognition();
+        recognition.lang = 'ja-JP';
+        recognition.continuous = true;
+        recognition.interimResults = true; // 中間結果を有効化してレスポンス速度を上げる
+
+        recognition.onstart = () => {
+          restartAttempts = 0;
+          micBtn.classList.add('listening');
+          micLabel.textContent = '認識中...';
+        };
+
+        recognition.onresult = (event) => {
+          restartAttempts = 0;
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            const transcript = event.results[i][0].transcript;
+            
+            // 中間結果（isFinal=false）でもマッチングを試みる
+            // 第2引数に i (resultIndex) を渡す
+            const matched = matchCommand(transcript, i);
+            if (matched) break; // マッチしたらループを抜ける
+          }
+        };
+
+        recognition.onerror = (event) => {
+          console.warn('Speech error:', event.error);
+          if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+            showToast('🎤 マイクの使用が許可されていません');
+            stopListening();
+            return;
+          }
+          if (event.error === 'network') {
+            showToast('ネットワークエラー。接続を確認してください');
+            stopListening();
+            return;
+          }
+          // auto restart on 'no-speech', 'audio-capture', 'aborted' etc.
+          if (isListening && restartAttempts < MAX_RESTART_ATTEMPTS) {
+            restartAttempts++;
+            const delay = Math.min(500 * restartAttempts, 3000);
+            setTimeout(() => {
+              if (isListening) {
+                try {
+                  recognition.start();
+                } catch (e) {
+                  console.warn('Restart failed:', e);
+                }
+              }
+            }, delay);
+          } else if (restartAttempts >= MAX_RESTART_ATTEMPTS) {
+            showToast('音声認識の再開に失敗しました。マイクボタンを押し直してください');
+            stopListening();
+          }
+        };
+
+        recognition.onend = () => {
+          if (isListening) {
+            if (restartAttempts < MAX_RESTART_ATTEMPTS) {
+              restartAttempts++;
+              const delay = Math.min(300 * restartAttempts, 2000);
+              setTimeout(() => {
+                if (isListening) {
+                  try {
+                    recognition.start();
+                  } catch (e) {
+                    console.warn('Restart failed on end:', e);
+                  }
+                }
+              }, delay);
+            } else {
+              showToast('音声認識が停止しました。マイクボタンを押し直してください');
+              stopListening();
+            }
+          }
+        };
+
+        try {
+          recognition.start();
+          if (audioCtx && audioCtx.state === 'suspended') {
+            audioCtx.resume();
+          }
+        } catch (e) {
+          console.warn('Failed to start recognition:', e);
+          showToast('音声認識の開始に失敗しました: ' + e.message);
+          stopListening();
+        }
+      }
+
+      function stopListening() {
+        isListening = false;
+        if (recognition) {
+          recognition.abort();
+          recognition = null;
+        }
+        micBtn.classList.remove('listening');
+        micLabel.textContent = 'マイクON';
+      }
+
+      micBtn.addEventListener('click', () => {
+        if (!speechSupported) {
+          showToast('お使いのブラウザは音声認識に対応していません。タップで操作できます');
+          return;
+        }
+
+        // Initialize AudioContext on first user tap
+        getAudioCtx();
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+
+        if (isListening) {
+          stopListening();
+        } else {
+          startListening();
+        }
+      });
+
+      // ===== Screen Wake Lock =====
+      let wakeLock = null;
+
+      async function requestWakeLock() {
+        if (!('wakeLock' in navigator)) {
+          wakeIndicator.textContent = '';
+          return;
+        }
+        try {
+          wakeLock = await navigator.wakeLock.request('screen');
+          wakeIndicator.textContent = '☀️ 常時表示';
+          wakeLock.addEventListener('release', () => {
+            wakeIndicator.textContent = '';
+          });
+        } catch (e) {
+          wakeIndicator.textContent = '';
+        }
+      }
+
+      // Re-acquire wake lock when page becomes visible again
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+          requestWakeLock();
+        }
+      });
+
+      // ===== Init =====
+      loadState();
+      render();
+      requestWakeLock();
+
+    })();
+  </script>
+</body>
+
+</html>
