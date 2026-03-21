@@ -19,7 +19,7 @@ npm run build
 
 `main` ブランチにpushすると、GitHub Actionsで自動的にGitHub Pagesへデプロイされます。
 
-
+`
 SmallToolsLab/
 ├── astro.config.mjs          # Astro設定（Tailwind統合、サイトURL）
 ├── tailwind.config.mjs       # Tailwindカスタム設定（SWELL風カラー、Noto Sans JP）
@@ -38,4 +38,4 @@ SmallToolsLab/
     │   └── AppCard.astro     # アプリカード（SWELL風ホバーアニメーション）
     └── pages/
         └── index.astro       # トップページ
-
+`
