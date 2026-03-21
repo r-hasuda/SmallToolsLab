@@ -1,0 +1,57 @@
+---
+export interface Props {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  icon: string;
+  url: string;
+  updatedAt: string;
+}
+
+const { id, title, description, category, icon, url, updatedAt } = Astro.props;
+
+// 日付をフォーマット
+const formattedDate = new Date(updatedAt).toLocaleDateString('ja-JP', {
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+---
+
+<article
+  class="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col transition-all duration-300 ease-out hover:-translate-y-2 hover:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.1)]"
+  data-app-id={id}
+>
+  <!-- アイコンエリア -->
+  <div class="h-48 bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-swell-blue/5 to-swell-navy/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+    <span class="text-6xl relative z-10 group-hover:scale-110 transition-transform duration-300">{icon}</span>
+  </div>
+
+  <!-- コンテンツ -->
+  <div class="p-6 flex-grow">
+    <div class="flex items-center gap-2 mb-3">
+      <span class="px-2.5 py-0.5 bg-blue-100 text-swell-blue text-xs font-bold rounded-full">
+        {category}
+      </span>
+      <span class="text-xs text-gray-400">{formattedDate} Update</span>
+    </div>
+    <h3 class="text-xl font-bold mb-3 text-gray-800 group-hover:text-swell-blue transition-colors duration-200">
+      {title}
+    </h3>
+    <p class="text-gray-600 text-sm leading-relaxed">
+      {description}
+    </p>
+  </div>
+
+  <!-- CTAボタン -->
+  <div class="p-6 pt-0 mt-auto">
+    <a
+      href={url}
+      class="block w-full text-center bg-swell-navy text-white py-3 rounded-xl font-bold hover:bg-swell-navy/90 transition-all duration-200 hover:shadow-lg"
+    >
+      ツールを開く
+    </a>
+  </div>
+</article>

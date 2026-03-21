@@ -1,0 +1,71 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import AppCard from '../components/AppCard.astro';
+import apps from '../data/apps.json';
+---
+
+<Layout>
+  <Header />
+
+  <!-- ヒーローセクション -->
+  <section class="bg-swell-navy text-white py-20 px-6 text-center relative overflow-hidden">
+    <!-- 背景装飾 -->
+    <div class="absolute inset-0 overflow-hidden">
+      <div class="absolute -top-24 -right-24 w-96 h-96 bg-swell-blue/10 rounded-full blur-3xl"></div>
+      <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl"></div>
+    </div>
+    <div class="max-w-3xl mx-auto relative z-10">
+      <h2 class="text-3xl md:text-4xl font-bold mb-6 leading-tight">
+        ニッチな「あったらいいな」を<br class="md:hidden" />叶えるツール集
+      </h2>
+      <p class="text-lg opacity-80 leading-relaxed max-w-2xl mx-auto">
+        個人開発者が作る、インストール不要のWeb便利アプリ。<br class="hidden md:inline" />すべて無料・登録なしで使えます。
+      </p>
+    </div>
+  </section>
+
+  <!-- AdSense Placeholder: ヒーロー下 -->
+  <!-- <div class="max-w-6xl mx-auto px-6 py-4"><ins class="adsbygoogle" data-ad-slot="XXXXXXXXXX"></ins></div> -->
+
+  <!-- アプリ一覧セクション -->
+  <main id="apps" class="max-w-6xl mx-auto px-6 py-16">
+    <h3 class="text-2xl font-bold text-center mb-12 relative pb-4">
+      New Apps
+      <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-swell-blue rounded-full"></span>
+    </h3>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+      {apps.map((app) => (
+        <AppCard
+          id={app.id}
+          title={app.title}
+          description={app.description}
+          category={app.category}
+          icon={app.icon}
+          url={app.url}
+          updatedAt={app.updatedAt}
+        />
+      ))}
+
+      <!-- Coming Soon カード -->
+      <article class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col opacity-60">
+        <div class="h-48 bg-gray-50 flex items-center justify-center">
+          <span class="text-6xl text-gray-200">?</span>
+        </div>
+        <div class="p-6 flex-grow">
+          <h3 class="text-xl font-bold mb-3 text-gray-400">Next App Coming Soon...</h3>
+          <p class="text-gray-400 text-sm leading-relaxed">
+            現在、新しい便利ツールを開発中です。公開をお楽しみに。
+          </p>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <!-- AdSense Placeholder: アプリ一覧下 -->
+  <!-- <div class="max-w-6xl mx-auto px-6 py-4"><ins class="adsbygoogle" data-ad-slot="XXXXXXXXXX"></ins></div> -->
+
+  <Footer />
+</Layout>
