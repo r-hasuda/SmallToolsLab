@@ -7,5 +7,15 @@
     "icon": "🧶",
     "url": "/knitting-voice-counter/",
     "updatedAt": "2026-03-21"
+  },
+  {
+    "id": "ai-amigurumi",
+    "title": "AIあみぐるみ作家",
+    "description": "写真をアップロードするだけで、AIが可愛いあみぐるみのデザインと編み図（レシピ）を自動生成。初心者でも編める詳細なレシピ付き。",
+    "category": "AI・クリエイティブ",
+    "icon": "🧸",
+    "url": "/ai-amigurumi/",
+    "updatedAt": "2026-03-22"
   }
 ]
+
