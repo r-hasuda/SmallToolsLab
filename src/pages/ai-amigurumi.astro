@@ -1,54 +1,30 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import Header from '../components/Header.astro';
-import Footer from '../components/Footer.astro';
+import ToolPageLayout from '../components/ToolPageLayout.astro';
 ---
 
-<Layout
-  title="AIあみぐるみ作家 | SmallTools Lab"
-  description="写真をアップロードするだけで、AIが可愛いあみぐるみのデザインと編み図（レシピ）を自動生成。初心者でも編める詳細なレシピ付き。"
+<ToolPageLayout
+  title="AIあみぐるみ作家"
+  description="写真から、あなただけのあみぐるみレシピを。AIがデザインと編み図を自動生成します。"
+  icon="🧸"
+  appUrl="https://ai-amigurumi-app-humwd4os764ngpkomazvtk.streamlit.app/"
+  noteUrl="https://note.com/boona_happylife/n/n38d6b698ef81?sub_rt=share_sb"
+  aboutText="「あの子をあみぐるみにしたい」——そんな想いに応えるために生まれたツールです。写真をアップロードするだけで、AIがあみぐるみのデザインと、初心者でも編める詳細なレシピ（編み図）を自動生成します。"
+  steps={[
+    "難易度を選択：左の設定欄から、シンプル or リアル を選択します。",
+    "作成モードを選択：AIにデザインを生成してほしいのか、元画像から直接編み図を作成するのかを選択します。",
+    "写真をアップロード：あみぐるみにしたい対象の写真を選択します。",
+    "AIがデザインを生成：AIが写真を解析し、可愛いあみぐるみのデザインを提案します。",
+    "編み図（レシピ）を確認：初心者でもわかりやすい、段ごとの詳細なレシピが表示されます。",
+    "PDFダウンロード：PDFをダウンロード可能です。",
+    "あみぐるみを作る：レシピに沿って、世界でひとつだけのあみぐるみを編みましょう！",
+  ]}
 >
-  <Header />
-
-  <main class="bg-gray-50">
-    <!-- アプリ紹介ヘッダー -->
-    <div class="bg-swell-navy text-white py-10 px-6">
-      <div class="max-w-4xl mx-auto text-center">
-        <span class="text-4xl mb-4 block">🧸</span>
-        <h1 class="text-2xl md:text-3xl font-bold mb-3">AIあみぐるみ作家</h1>
-        <p class="text-sm opacity-80 max-w-2xl mx-auto">
-          写真から、あなただけのあみぐるみレシピを。AIがデザインと編み図を自動生成します。
-        </p>
-      </div>
-    </div>
-
-    <!-- iFrame埋め込み -->
-    <div class="max-w-6xl mx-auto px-4 py-8">
-      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <iframe
-          src="https://ai-amigurumi-app-humwd4os764ngpkomazvtk.streamlit.app/?embed=true"
-          class="w-full border-0"
-          style="height: 800px;"
-          title="AIあみぐるみ作家"
-          loading="lazy"
-          allow="camera;microphone"
-        ></iframe>
-      </div>
-
-      <!-- フォールバック: iFrameが表示されない場合 -->
-      <p class="text-center text-sm text-gray-500 mt-4">
-        アプリが表示されない場合は
-        <a
-          href="https://ai-amigurumi-app-humwd4os764ngpkomazvtk.streamlit.app/"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="text-swell-blue hover:underline"
-        >
-          こちらから直接開けます →
-        </a>
-      </p>
-    </div>
-  </main>
-
-  <Footer />
-</Layout>
+  <iframe
+    src="https://ai-amigurumi-app-humwd4os764ngpkomazvtk.streamlit.app/?embed=true"
+    class="w-full border-0"
+    style="height: 800px;"
+    title="AIあみぐるみ作家"
+    loading="lazy"
+    allow="camera;microphone"
+  ></iframe>
+</ToolPageLayout>

@@ -1,0 +1,112 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout
+  title="利用規約・免責事項 | SmallTools Lab"
+  description="SmallTools Labの利用規約と免責事項について。ツールの利用条件、生成データの取り扱い、免責事項を説明します。"
+>
+  <Header />
+
+  <main class="max-w-3xl mx-auto px-6 py-16">
+    <h1 class="text-3xl font-bold mb-10 text-gray-800 text-center relative pb-4">
+      利用規約・免責事項
+      <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-swell-blue rounded-full"></span>
+    </h1>
+
+    <div class="prose prose-gray max-w-none space-y-10 text-sm leading-relaxed text-gray-700">
+
+      <!-- 本規約について -->
+      <section>
+        <h2 class="text-lg font-bold text-gray-800 mb-3 border-l-4 border-swell-blue pl-3">本規約について</h2>
+        <p>
+          この利用規約（以下「本規約」）は、SmallTools Lab（以下「当サイト」）が提供するすべてのWebツール・サービス（以下「本サービス」）の利用条件を定めるものです。
+          本サービスをご利用いただいた時点で、本規約に同意いただいたものとみなします。
+        </p>
+      </section>
+
+      <!-- サービスの内容 -->
+      <section>
+        <h2 class="text-lg font-bold text-gray-800 mb-3 border-l-4 border-swell-blue pl-3">サービスの内容</h2>
+        <p>
+          当サイトでは、個人開発者が制作したWebツールを無料で公開しています。
+          提供するツールには、AIを活用した画像・テキスト生成、計算ツール、その他ユーティリティが含まれます。
+        </p>
+        <p class="mt-3">
+          本サービスの内容は、予告なく変更・追加・削除される場合があります。
+          また、メンテナンスやその他の理由により、予告なくサービスを一時停止または終了する場合があります。
+        </p>
+      </section>
+
+      <!-- 生成データの取り扱い -->
+      <section>
+        <h2 class="text-lg font-bold text-gray-800 mb-3 border-l-4 border-swell-blue pl-3">生成データの取り扱い</h2>
+        <p>
+          本サービスにおいてAIが生成したデータ（画像、テキスト、図案、編み図など）は、個人的な利用の範囲でご利用いただけます。
+        </p>
+        <ul class="mt-3 space-y-2 list-disc list-inside">
+          <li>生成データの著作権やライセンスについては、利用するAIサービスの規約に準じます。</li>
+          <li>生成データを商用利用する場合は、ご自身の責任においてご利用ください。</li>
+          <li>生成データの再配布・転売は、対象のAIサービスの規約に基づきご判断ください。</li>
+        </ul>
+      </section>
+
+      <!-- 免責事項 -->
+      <section>
+        <h2 class="text-lg font-bold text-gray-800 mb-3 border-l-4 border-swell-blue pl-3">免責事項</h2>
+        <p>
+          当サイトで提供するWebツールは、個人が制作したものであり、動作の完全性・正確性を保証するものではありません。
+        </p>
+        <ul class="mt-3 space-y-2 list-disc list-inside">
+          <li>AIによる生成物（図案、画像、テキストなど）の内容・品質・正確性について、当サイトは一切の保証をいたしません。</li>
+          <li>計算ツールの計算結果について、その正確性を保証するものではありません。重要な判断にご利用の際は、必ず専門家にご確認ください。</li>
+          <li>本サービスの利用によって生じた損害等について、運営者は一切の責任を負いかねます。</li>
+          <li>当サイトからリンクやバナーなどによって他サイトに移動された場合、移動先サイトで提供される情報やサービスについて一切の責任を負いません。</li>
+        </ul>
+      </section>
+
+      <!-- 禁止事項 -->
+      <section>
+        <h2 class="text-lg font-bold text-gray-800 mb-3 border-l-4 border-swell-blue pl-3">禁止事項</h2>
+        <p>本サービスの利用にあたり、以下の行為を禁止いたします。</p>
+        <ul class="mt-3 space-y-2 list-disc list-inside">
+          <li>法令または公序良俗に違反する行為</li>
+          <li>当サイトのサーバーやネットワークに過度な負荷をかける行為</li>
+          <li>他のユーザーまたは第三者の権利を侵害する行為</li>
+          <li>本サービスの運営を妨害する行為</li>
+          <li>不正アクセスやリバースエンジニアリング等の行為</li>
+        </ul>
+      </section>
+
+      <!-- 知的財産権 -->
+      <section>
+        <h2 class="text-lg font-bold text-gray-800 mb-3 border-l-4 border-swell-blue pl-3">知的財産権</h2>
+        <p>
+          当サイトに掲載されている文章・画像・ソースコード・デザインその他のコンテンツに関する著作権は、当サイト運営者に帰属します。
+          無断転載・複製は禁止いたします。引用する場合は、引用元として当サイトのURLを明記してください。
+        </p>
+      </section>
+
+      <!-- 規約の変更 -->
+      <section>
+        <h2 class="text-lg font-bold text-gray-800 mb-3 border-l-4 border-swell-blue pl-3">規約の変更</h2>
+        <p>
+          当サイトは、必要に応じて本規約を変更することがあります。
+          変更後の利用規約は、当ページに掲載した時点で効力を発するものとします。
+        </p>
+      </section>
+
+      <!-- 制定日 -->
+      <section class="pt-4 border-t border-gray-200">
+        <p class="text-xs text-gray-400">
+          制定日：2026年3月22日
+        </p>
+      </section>
+
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
