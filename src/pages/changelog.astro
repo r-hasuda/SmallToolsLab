@@ -1,0 +1,73 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+
+const changelogs = [
+  {
+    date: '2026-03-25',
+    content: '更新履歴ページを公開しました。',
+  },
+  {
+    date: '2026-03-22',
+    content: '利用規約・免責事項、プライバシーポリシーページを公開しました。',
+  },
+  {
+    date: '2026-03-21',
+    content: 'SmallTools Lab 初期リリース。',
+  },
+];
+---
+
+<Layout
+  title="更新履歴 | SmallTools Lab"
+  description="SmallTools Labのツール追加や機能改善の更新履歴をまとめています。"
+>
+  <Header />
+
+  <main class="max-w-3xl mx-auto px-6 py-16">
+    <div class="mb-12">
+      <p class="text-sm text-gray-400 tracking-widest uppercase mb-2 text-center">SMALLTOOLS LAB / CHANGELOG</p>
+      <h1 class="text-3xl font-bold mb-6 text-gray-800 text-center relative pb-4">
+        更新履歴
+        <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-swell-blue rounded-full"></span>
+      </h1>
+      <p class="text-center text-gray-600 text-sm">
+        ツール追加・機能改善の履歴をまとめています。
+      </p>
+    </div>
+
+    <div class="bg-white border border-gray-100 shadow-sm rounded-xl p-6 md:p-8">
+      <h2 class="text-lg font-bold text-gray-800 mb-6 border-b border-gray-100 pb-4">最新の更新</h2>
+      
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm text-left text-gray-700">
+          <thead class="text-xs text-gray-500 bg-gray-50 border-b border-gray-100">
+            <tr>
+              <th scope="col" class="px-4 py-3 font-medium whitespace-nowrap w-32">日付</th>
+              <th scope="col" class="px-4 py-3 font-medium">内容</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            {changelogs.map((log) => (
+              <tr class="hover:bg-gray-50/50 transition-colors">
+                <td class="px-4 py-4 whitespace-nowrap text-gray-500 font-mono text-xs md:text-sm">
+                  {log.date}
+                </td>
+                <td class="px-4 py-4 leading-relaxed">
+                  {log.content}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <p class="text-xs text-gray-400 mt-6 pt-4 border-t border-gray-100">
+        更新履歴は今後も随時追加します。
+      </p>
+    </div>
+  </main>
+
+  <Footer />
+</Layout>
