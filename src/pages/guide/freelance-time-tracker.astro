@@ -1,0 +1,110 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import apps from '../../data/apps.json';
+
+const app = apps.find(a => a.id === 'freelance-time-tracker');
+---
+
+<Layout
+  title="使い方＆開発ストーリー：在宅副業タイムトラッカー | SmallTools Lab"
+  description="在宅副業タイムトラッカーの使い方と機能。案件ごとの作業時間と実質時給を可視化し、適切な単価交渉のタイミングを知らせます。"
+>
+  <Header />
+
+  <main class="max-w-3xl mx-auto px-6 py-16">
+    <div class="mb-10 text-center relative pb-8">
+      <span class="inline-block py-1 px-3 rounded-full bg-blue-100 text-swell-blue text-sm font-bold mb-4">
+        使い方 ＆ 開発ストーリー
+      </span>
+      <h1 class="text-3xl font-bold text-gray-800">
+        在宅副業タイムトラッカー
+      </h1>
+      <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-swell-blue rounded-full"></span>
+    </div>
+
+    <!-- AdSense Placeholder (Top) -->
+    <!-- <div class="max-w-prose mx-auto mb-10 text-center"><ins class="adsbygoogle" data-ad-slot="XXXXXXXXXX"></ins></div> -->
+
+    <div class="prose prose-gray prose-a:text-swell-blue prose-a:no-underline hover:prose-a:underline max-w-none space-y-6 text-sm leading-relaxed text-gray-700">
+      
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mb-4 border-l-4 border-swell-blue pl-3">在宅副業タイムトラッカーとは？</h2>
+        <p>
+          在宅副業ワーカーやフリーランス向けのタイムトラッカー（時間計測）アプリケーションです。<br>
+          案件ごとの「作業時間」と「実質時給」を可視化し、予定外の追加作業による「スコープクリープ（作業範囲の肥大化）」を防ぐことを目的としています。<br>
+          時給換算での稼働状況をリアルタイムで把握できるため、適切な単価交渉のタイミングを知らせてくれます。
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">主な機能と使い方</h2>
+        
+        <h3 class="text-lg font-bold text-gray-800 mt-6 mb-2">リアルタイムの実質時給計算</h3>
+        <p>
+          現在のペースで作業し続けた場合の「実質時給」を自動計算して強調表示します（※計算の極端なブレを防ぐため、作業開始から5分後に表示されます）。
+        </p>
+
+        <h3 class="text-lg font-bold text-gray-800 mt-6 mb-2">ダブルタイマー機能</h3>
+        <p>
+          「通常作業」タイマーと「予定外・追加」タイマーを搭載しています。<br>
+          どちらか一方を再生すると、もう一方は自動で一時停止する排他制御が行われるため、余計な操作ミスを防ぎ正確な計測が可能です。
+        </p>
+
+        <h3 class="text-lg font-bold text-gray-800 mt-6 mb-2">アラート設定によるスコープクリープ防止</h3>
+        <p>
+          予定外作業の時間が設定した「上限時間（分）」を超えると警告メッセージを表示します。<br>
+          さらに、実質時給が設定した「下限金額（円）」を下回った場合にも警告メッセージを表示し、クライアントへの単価交渉の必要性を客観的な数値で知らせてくれます。
+        </p>
+
+        <h3 class="text-lg font-bold text-gray-800 mt-6 mb-2">データの自動保存</h3>
+        <p>
+          登録した案件やタイマーの経過時間は、お使いのブラウザ（ローカルストレージ）に自動的に保存されます。<br>
+          画面を閉じても作業データは復元されるため安心です。
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">開発の背景</h2>
+        <p>
+          このアプリは、フリーランスとして働く中で感じる「結局これ、時給換算していくらになっているんだろう？」という不安や、「ちょっとした修正や追加作業」が積み重なることによる疲弊を防ぐために開発しました。
+        </p>
+        <p>
+          客観的な時間と時給のデータがあれば、「ここまで作業したので、これ以上は追加費用としてご相談させてください」とスマートに交渉できるはず。そんな想いで作っています。
+        </p>
+        <!-- Note記事のリンクが提供された場合はここに挿入します -->
+        <!-- <p class="mt-4 font-bold">
+          👉 <a href="NOTE_URL" target="_blank" rel="noopener noreferrer">開発の背景をnoteで読む</a>
+        </p> -->
+      </section>
+
+      <section class="bg-blue-50 p-6 rounded-xl mt-12 border border-blue-100">
+        <h2 class="text-lg font-bold text-gray-800 mb-3">フィードバックをお待ちしています！</h2>
+        <p class="text-sm">
+          「もっとこんな機能があれば便利！」「こんな使い方もできた！」といったご意見があれば、ぜひお問い合わせフォームから教えてください。今後のアップデートの参考にさせていただきます！
+        </p>
+      </section>
+
+    </div>
+
+    <!-- AdSense Placeholder (Bottom) -->
+    <!-- <div class="max-w-prose mx-auto mt-10 text-center"><ins class="adsbygoogle" data-ad-slot="XXXXXXXXXX"></ins></div> -->
+
+    <!-- CTA Button -->
+    <div class="mt-12 text-center flex flex-col items-center">
+      <a
+        href={app?.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-2 bg-swell-navy text-white font-bold py-4 px-10 rounded-xl hover:bg-swell-navy/90 transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+        タイムトラッカーを開く
+      </a>
+    </div>
+
+  </main>
+
+  <Footer />
+</Layout>

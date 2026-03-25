@@ -1,0 +1,123 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import apps from '../../data/apps.json';
+
+const app = apps.find(a => a.id === 'ai-amigurumi');
+---
+
+<Layout
+  title="使い方＆開発ストーリー：AIあみぐるみ作家 | SmallTools Lab"
+  description="AIあみぐるみ作家の詳しい使い方と、AIと一緒に自作した開発の裏話・ストーリーをご紹介します。"
+>
+  <Header />
+
+  <main class="max-w-3xl mx-auto px-6 py-16">
+    <div class="mb-10 text-center relative pb-8">
+      <span class="inline-block py-1 px-3 rounded-full bg-blue-100 text-swell-blue text-sm font-bold mb-4">
+        使い方 ＆ 開発ストーリー
+      </span>
+      <h1 class="text-3xl font-bold text-gray-800">
+        AIあみぐるみ作家
+      </h1>
+      <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-swell-blue rounded-full"></span>
+    </div>
+
+    <!-- AdSense Placeholder (Top) -->
+    <!-- <div class="max-w-prose mx-auto mb-10 text-center"><ins class="adsbygoogle" data-ad-slot="XXXXXXXXXX"></ins></div> -->
+
+    <div class="prose prose-gray prose-a:text-swell-blue prose-a:no-underline hover:prose-a:underline max-w-none space-y-6 text-sm leading-relaxed text-gray-700">
+      
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mb-4 border-l-4 border-swell-blue pl-3">AIあみぐるみメーカーとは？</h2>
+        <p>
+          「自分の好きなキャラクター（推し）の概念あみぐるみを作りたいけれど、ぴったりの編み図がどこにもない……」<br>
+          そんな編み物初心者の悩みを解決するために生まれたのが、この「AIあみぐるみメーカー」です。
+        </p>
+        <p>
+          お手持ちの画像やイラストをアップロードするだけで、AIが自動的に可愛い「あみぐるみ風の完成イメージ」を生成し、さらにそれを形にするための「編み図（編み方指示）」まで作成してくれます。
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">基本的な使い方</h2>
+        <p>アプリの操作はとてもシンプルです。完全無料でご利用いただけます。</p>
+        <ol class="list-decimal pl-5 space-y-2 mt-4">
+          <li><strong>画像をアップロード</strong>：イメージの元となる画像を読み込ませます。</li>
+          <li><strong>あみぐるみ化</strong>：AIが画像を解析し、毛糸の質感を活かした「あみぐるみ完成図」を提案します。</li>
+          <li><strong>編み図の作成</strong>：完成図が気に入ったらボタンをポチッ。AIが具体的な編み方の指示（1段目は○目、2段目で○目増やして…等）をテキストで書き出します。</li>
+          <li><strong>PDFで保存</strong>：生成された編み図はPDFとしてダウンロード可能。スマホで確認しながら編んだり、紙に印刷したりと自由に持ち運べます。</li>
+        </ol>
+
+        <div class="bg-gray-50 border border-gray-200 p-5 rounded-xl mt-8">
+          <h3 class="text-md font-bold text-gray-800 mb-2 flex items-center gap-2">
+            <span class="text-xl">🚀</span> Ver 1.2.0 アップデート情報
+          </h3>
+          <p class="text-sm mb-2">皆様のフィードバックと自身での検証をもとに、新しい機能を追加しました！</p>
+          <ul class="list-disc pl-5 space-y-1 text-sm">
+            <li><strong>ダイレクトモード</strong>：AIによるイメージ変換を挟まず、元画像から直接編み図を作成します。</li>
+            <li><strong>リアル（上級者）モード</strong>：より細かいディテールまで忠実に再現した、編みごたえのある複雑な図案を生成します。</li>
+          </ul>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">ご利用にあたっての注意点とお願い</h2>
+        <p>当ツールは最新のAI（Google Gemini 1.5 Flash等）を活用して図案を生成していますが、以下の点にご留意ください。</p>
+        
+        <ul class="list-disc pl-5 mt-4 space-y-4">
+          <li>
+            <strong>出力される編み図の正確性について</strong><br>
+            AIが提案する編み図は、必ずしも100%完璧な立体になることを保証するものではありません。編み手の力加減や毛糸の種類によっても仕上がりは変化します。「AIの指示通りに編んだらどんな不思議な形になるか？」という実験的なプロセスも含めてお楽しみください。
+          </li>
+          <li>
+            <strong>著作権チェック機能について</strong><br>
+            安心してご利用いただけるよう、特定の著作権があるキャラクター画像を読み込んだ際には、AIが判断して注意を促すアラート機能を搭載しています。著作物の取り扱いには十分ご注意の上、個人で楽しむ範囲でご活用ください。
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">開発の背景</h2>
+        <p>
+          「編み図がないなら、自分で作るしかない」<br>
+          そう思い立ち社内SEとしての経験を活かして、AIと二人三脚でこのアプリを開発しました。
+        </p>
+        <p>
+          開発中は決してスムーズなことばかりではなく、愛猫の写真を読み込ませたら「全部目がバキバキにデカい謎の生物」が爆誕するなど、AIへのプロンプト（指示）調整には何度も頭を抱えました。しかし、技術的な課題から著作権という倫理的な問題まで、AIと相談しながら一つひとつクリアしていく過程は、ものづくりとしての大きな楽しさがありました。
+        </p>
+        <p class="mt-4">
+          より詳しい開発の裏話や、AIが生成した図案を実際に編んでみた検証結果などは、以下のnote記事で連載しています。
+        </p>
+        <p class="mt-4 font-bold">
+          👉 <a href={app?.noteUrl} target="_blank" rel="noopener noreferrer">開発の背景や失敗談をnoteで読む</a>
+        </p>
+      </section>
+
+      <section class="bg-blue-50 p-6 rounded-xl mt-12 border border-blue-100">
+        <h2 class="text-lg font-bold text-gray-800 mb-3">あなたの「欲しい」を教えてください！</h2>
+        <p class="text-sm">
+          「こんな機能が追加されたらもっと便利！」「編み物以外でもこんなAIツールが欲しい！」といったアイデアがあれば、ぜひお問い合わせフォームやnoteのコメント欄でお知らせください。皆さんのアイデアをヒントに、アプリをさらに進化させていきます！
+        </p>
+      </section>
+
+    </div>
+
+    <!-- AdSense Placeholder (Bottom) -->
+    <!-- <div class="max-w-prose mx-auto mt-10 text-center"><ins class="adsbygoogle" data-ad-slot="XXXXXXXXXX"></ins></div> -->
+
+    <!-- CTA Button -->
+    <div class="mt-12 text-center">
+      <a
+        href={app?.url}
+        class="inline-block bg-swell-navy text-white font-bold py-4 px-10 rounded-xl hover:bg-swell-navy/90 transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
+      >
+        AIあみぐるみメーカー を開く
+      </a>
+    </div>
+
+  </main>
+
+  <Footer />
+</Layout>

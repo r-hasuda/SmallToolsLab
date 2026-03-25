@@ -1,0 +1,123 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import apps from '../../data/apps.json';
+
+const app = apps.find(a => a.id === 'knitting-voice-counter');
+---
+
+<Layout
+  title="使い方＆開発ストーリー：編み物音声カウンター | SmallTools Lab"
+  description="編み物音声カウンターの詳しい使い方と、AIと一緒に自作した開発の裏話・ストーリーをご紹介します。"
+>
+  <Header />
+
+  <main class="max-w-3xl mx-auto px-6 py-16">
+    <div class="mb-10 text-center relative pb-8">
+      <span class="inline-block py-1 px-3 rounded-full bg-blue-100 text-swell-blue text-sm font-bold mb-4">
+        使い方 ＆ 開発ストーリー
+      </span>
+      <h1 class="text-3xl font-bold text-gray-800">
+        編み物音声カウンター
+      </h1>
+      <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-swell-blue rounded-full"></span>
+    </div>
+
+    <!-- AdSense Placeholder (Top) -->
+    <!-- <div class="max-w-prose mx-auto mb-10 text-center"><ins class="adsbygoogle" data-ad-slot="XXXXXXXXXX"></ins></div> -->
+
+    <div class="prose prose-gray prose-a:text-swell-blue prose-a:no-underline hover:prose-a:underline max-w-none space-y-6 text-sm leading-relaxed text-gray-700">
+      
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mb-4 border-l-4 border-swell-blue pl-3">編み物音声カウンターとは？</h2>
+        <p>
+          編み物をしていて、「あれ、私今何目編んだっけ？」と迷子になった経験はありませんか？<br>
+          編み棒と毛糸で両手が塞がっているのに、いちいち手を止めてスマホの画面をタップして段数や目数をカウントするのは非常に面倒です。
+        </p>
+        <p>
+          この「編み物音声カウンター」は、1目編むごとに声に出してカウントを進められる、完全ハンズフリーの補助ツールです。
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">便利な機能と使い方</h2>
+        <p>
+          マイクへのアクセスを許可し、以下の音声コマンドを話しかけるだけで操作できます。
+        </p>
+        <ul class="list-disc pl-5 space-y-2 mt-4">
+          <li><strong>「はい」</strong>：目数が +1 されます。</li>
+          <li><strong>「次」</strong>：段数が進み、目数がリセットされます。</li>
+          <li><strong>「戻して」</strong>：間違えて音声認識されてしまった時に、1つ前の状態に戻せます。</li>
+        </ul>
+
+        <h3 class="text-lg font-bold text-gray-800 mt-8 mb-3">🧶 おすすめ機能：円編みナビモード</h3>
+        <p>
+          あみぐるみのベースなどで多用する、「(細1、増) × 6」といった円編みのパターン。いちいち編み図を見て確認する手間を省くための強力なサポート機能です。
+        </p>
+        <p>
+          画面の「🧶 円編みナビモード」をONにすると、現在の段数から「次はどう編むか」をアプリが自動で計算してナビゲートします。<br>
+          あなたはただ「はい」と唱えるだけ。アプリが勝手に「次は細編み」「次は増やし目」とモードを切り替え、1周分が終わると「段が完了しました！」と通知して次の段へ進みます。
+        </p>
+        <p>
+          途中で平編みや減らし目になった場合でも、画面上のボタンで簡単に部分修正（オーバーライド）が可能。その後は修正されたパターンに合わせて自動案内を継続します。
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">ご利用にあたっての注意点（音声認識について）</h2>
+        <p>
+          当ツールはブラウザの標準機能（Web Speech API）を使用しているため、以下の環境要因によって音声認識がうまく反応しない場合があります。
+        </p>
+        <ul class="list-disc pl-5 mt-4 space-y-2">
+          <li>ご利用のスマートフォンやPCのマイク性能</li>
+          <li>テレビの音響や、周りの生活音などの環境音</li>
+          <li>滑舌や声の大きさ</li>
+        </ul>
+        <p class="mt-4">
+          静かな部屋で黙々と編む分には快適に動作しますが、環境によっては誤認識が発生する可能性がある点をご了承ください。
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">開発の背景・裏話</h2>
+        <p>
+          プログラミングのコードを書く勉強も兼ねて、AIと一緒に「自分専用のニッチなツール」を開発してみました。
+        </p>
+        <p>
+          特に苦労したのは「増やし目」のロジックです。最初はAIに「増やし目して」と軽く伝えただけでは思い通りに動かず、回数カウントがおかしくなってしまいました。そこで、「増やし目モードになってから、奇数回目は1/2回目、偶数回目は2/2回目にして」と細かいロジックを言語化して伝達するなど、的確に指示を出す泥臭いやり取りを重ねて完成に至りました。
+        </p>
+        <p class="mt-4">
+          より詳しい開発の裏話や、AIとの具体的なやり取りの様子は、以下のnote記事でまとめています。
+        </p>
+        <p class="mt-4 font-bold">
+          👉 <a href={app?.noteUrl} target="_blank" rel="noopener noreferrer">開発の背景をnoteで読む</a>
+        </p>
+      </section>
+
+      <section class="bg-blue-50 p-6 rounded-xl mt-12 border border-blue-100">
+        <h2 class="text-lg font-bold text-gray-800 mb-3">次のツールアイデアを募集中です！</h2>
+        <p class="text-sm">
+          「ハンドメイドや編み物をしていて、他にこんな補助ツールがあったらいいな」「こんな機能が欲しい！」というアイデアがあれば、ぜひnoteのコメント欄やお問い合わせフォームから教えてください。次のツール開発の参考にさせていただきます！
+        </p>
+      </section>
+
+    </div>
+
+    <!-- AdSense Placeholder (Bottom) -->
+    <!-- <div class="max-w-prose mx-auto mt-10 text-center"><ins class="adsbygoogle" data-ad-slot="XXXXXXXXXX"></ins></div> -->
+
+    <!-- CTA Button -->
+    <div class="mt-12 text-center">
+      <a
+        href={app?.url}
+        class="inline-block bg-swell-navy text-white font-bold py-4 px-10 rounded-xl hover:bg-swell-navy/90 transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
+      >
+        編み物音声カウンター を開く
+      </a>
+    </div>
+
+  </main>
+
+  <Footer />
+</Layout>

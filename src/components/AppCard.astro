@@ -8,9 +8,10 @@ export interface Props {
   url: string;
   updatedAt: string;
   noteUrl?: string;
+  storyUrl?: string;
 }
 
-const { id, title, description, category, icon, url, updatedAt, noteUrl } = Astro.props;
+const { id, title, description, category, icon, url, updatedAt, noteUrl, storyUrl } = Astro.props;
 
 // 日付をフォーマット
 const formattedDate = new Date(updatedAt).toLocaleDateString('ja-JP', {
@@ -54,17 +55,15 @@ const formattedDate = new Date(updatedAt).toLocaleDateString('ja-JP', {
     >
       ツールを開く
     </a>
-    {noteUrl && (
+    {storyUrl && (
       <a
-        href={noteUrl}
-        target="_blank"
-        rel="noopener noreferrer"
+        href={storyUrl}
         class="inline-flex items-center gap-1.5 mt-4 text-xs font-semibold text-gray-500 hover:text-swell-blue transition-colors duration-200"
       >
         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
         </svg>
-        開発の背景をnoteで読む →
+        使い方 ＆ 開発ストーリーを読む →
       </a>
     )}
   </div>
