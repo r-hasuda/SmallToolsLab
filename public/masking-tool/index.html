@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>機密情報マスキングツール</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f7f6; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .controls { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; display: flex; gap: 10px; align-items: center; }
+        #canvas-container { border: 2px dashed #ccc; background: white; position: relative; max-width: 90vw; max-height: 70vh; overflow: auto; }
+        canvas { display: block; cursor: crosshair; }
+        button { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-primary { background-color: #0d47a1; color: white; }
+        .btn-secondary { background-color: #e0e0e0; color: #333; }
+        .btn-danger { background-color: #d32f2f; color: white; }
+        input[type="file"] { display: none; }
+        .mode-active { border: 2px solid #000; }
+        .hint { color: #666; font-size: 0.85rem; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1>🔒 機密情報マスキングツール</h1>
+    <p>画像を読み込み、隠したい部分をドラッグで囲んでください。</p>
+    
+    <div class="controls">
+        <label class="btn-primary" style="padding: 10px 20px;">
+            画像を選択
+            <input type="file" id="imageInput" accept="image/*">
+        </label>
+        
+        <select id="maskType">
+            <option value="black">黒塗り</option>
+            <option value="blur">ぼかし</option>
+        </select>
+        
+        <button class="btn-secondary" id="undoBtn">元に戻す</button>
+        <button class="btn-danger" id="clearBtn">すべて消去</button>
+        <button class="btn-primary" id="downloadBtn">加工して保存</button>
+    </div>
+
+    <div id="canvas-container">
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <p class="hint">※処理はすべてお使いのブラウザ内で行われます。画像がサーバーに送信されることはありません。</p>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const imageInput = document.getElementById('imageInput');
+        const maskType = document.getElementById('maskType');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const undoBtn = document.getElementById('undoBtn');
+        const clearBtn = document.getElementById('clearBtn');
+
+        let img = new Image();
+        let isDrawing = false;
+        let startX, startY;
+        let originalImageData = null;
+        let currentImgSource = null;
+        let history = [];
+
+        imageInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                img.onload = () => {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    currentImgSource = event.target.result;
+                    history = [canvas.toDataURL()];
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        canvas.addEventListener('mousedown', (e) => {
+            if (!currentImgSource) return;
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            // スケール調整
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            startX = (e.clientX - rect.left) * scaleX;
+            startY = (e.clientY - rect.top) * scaleY;
+            originalImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDrawing) return;
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const mouseX = (e.clientX - rect.left) * scaleX;
+            const mouseY = (e.clientY - rect.top) * scaleY;
+            
+            // プレビュー表示（一旦元に戻してから描画）
+            ctx.putImageData(originalImageData, 0, 0);
+            drawMask(startX, startY, mouseX - startX, mouseY - startY, false);
+        });
+
+        canvas.addEventListener('mouseup', (e) => {
+            if (!isDrawing) return;
+            isDrawing = false;
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const mouseX = (e.clientX - rect.left) * scaleX;
+            const mouseY = (e.clientY - rect.top) * scaleY;
+            
+            drawMask(startX, startY, mouseX - startX, mouseY - startY, true);
+            history.push(canvas.toDataURL());
+        });
+
+        function drawMask(x, y, w, h, apply) {
+            ctx.save();
+            if (maskType.value === 'black') {
+                ctx.fillStyle = 'black';
+                ctx.fillRect(x, y, w, h);
+            } else if (maskType.value === 'blur') {
+                // 簡易ぼかし実装（一度その部分を取得してフィルターかける）
+                if (apply) {
+                    const padding = 10;
+                    ctx.filter = 'blur(10px)';
+                    // ぼかしを少しはみ出させて自然にする
+                    ctx.drawImage(canvas, x - padding, y - padding, w + padding*2, h + padding*2, x, y, w, h);
+                    ctx.filter = 'none';
+                } else {
+                    ctx.fillStyle = 'rgba(0,0,0,0.2)';
+                    ctx.fillRect(x, y, w, h);
+                    ctx.strokeStyle = 'blue';
+                    ctx.strokeRect(x, y, w, h);
+                }
+            }
+            ctx.restore();
+        }
+
+        undoBtn.addEventListener('click', () => {
+            if (history.length > 1) {
+                history.pop();
+                const lastState = history[history.length - 1];
+                const undoImg = new Image();
+                undoImg.onload = () => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(undoImg, 0, 0);
+                };
+                undoImg.src = lastState;
+            }
+        });
+
+        clearBtn.addEventListener('click', () => {
+            if (!currentImgSource) return;
+            if (confirm('すべての編集をクリアしますか？')) {
+                ctx.drawImage(img, 0, 0);
+                history = [canvas.toDataURL()];
+            }
+        });
+
+        downloadBtn.addEventListener('click', () => {
+            if (!currentImgSource) return;
+            const link = document.createElement('a');
+            link.download = 'masked_image.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+    </script>
+</body>
+</html>

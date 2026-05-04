@@ -30,5 +30,14 @@
     "storyUrl": "/guide/ai-amigurumi/",
     "noteUrl": "https://note.com/boona_happylife/n/n38d6b698ef81?sub_rt=share_sb",
     "updatedAt": "2026-03-22"
+  },
+  {
+    "id": "masking-tool",
+    "title": "機密情報マスキングツール",
+    "description": "画像内の機密情報を黒塗りやぼかしで安全にマスキング。処理はすべてブラウザ内で完結し、画像がサーバーに送信されることはありません。",
+    "category": "仕事・生産性",
+    "icon": "🔒",
+    "url": "/masking-tool/",
+    "updatedAt": "2026-05-04"
   }
 ]
