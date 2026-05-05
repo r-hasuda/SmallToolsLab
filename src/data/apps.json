@@ -39,5 +39,14 @@
     "icon": "🔒",
     "url": "/masking-tool/",
     "updatedAt": "2026-05-04"
+  },
+  {
+  "id": "periodic-schedule-tool",
+  "title": "定期スケジュール一括登録ツール",
+  "description": "家事などの定期的な予定を、GoogleカレンダーやGoogle Tasksに一括で登録。ルールに基づいた自動日付計算で、1年分などの予定を数秒でセットアップできます。",
+  "category": "仕事・生産性",
+  "icon": "📅",
+  "url": "https://periodic-schedule-tool.vercel.app/",
+  "updatedAt": "2026-05-05"
   }
 ]
