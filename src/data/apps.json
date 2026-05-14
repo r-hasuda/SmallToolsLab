@@ -46,7 +46,7 @@
   "description": "家事などの定期的な予定を、GoogleカレンダーやGoogle Tasksに一括で登録。ルールに基づいた自動日付計算で、1年分などの予定を数秒でセットアップできます。",
   "category": "仕事・生産性",
   "icon": "📅",
-  "url": "https://periodic-schedule-tool.vercel.app/",
+  "url": "https://schedule.smalltoollab.com/",
   "updatedAt": "2026-05-05"
   }
 ]
