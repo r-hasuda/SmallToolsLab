@@ -6,7 +6,9 @@ export interface Props {
   noteUrl?: string;
   guideUrl?: string;
   aboutText?: string;
+  recommendedFor?: string[];
   steps?: string[];
+  faq?: { q: string; a: string }[];
   appUrl?: string;
 }
 
@@ -21,7 +23,9 @@ const {
   noteUrl,
   guideUrl,
   aboutText,
+  recommendedFor = [],
   steps = [],
+  faq = [],
   appUrl,
 } = Astro.props;
 ---
@@ -83,6 +87,16 @@ const {
               {aboutText}
             </p>
           )}
+          {recommendedFor.length > 0 && (
+            <div class="bg-blue-50 border border-blue-100 rounded-xl p-5 mb-4">
+              <p class="text-sm font-bold text-gray-800 mb-2">こんな方におすすめ</p>
+              <ul class="list-disc pl-5 space-y-1">
+                {recommendedFor.map((item) => (
+                  <li class="text-sm text-gray-700 leading-relaxed">{item}</li>
+                ))}
+              </ul>
+            </div>
+          )}
           {noteUrl && (
             <a
               href={noteUrl}
@@ -127,6 +141,28 @@ const {
               </a>
             </div>
           )}
+        </section>
+      )}
+
+      <!-- よくある質問 -->
+      {faq.length > 0 && (
+        <section class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 mt-8">
+          <h2 class="text-xl font-bold text-gray-800 mb-6 border-l-4 border-swell-blue pl-3">
+            よくある質問
+          </h2>
+          <div class="space-y-6">
+            {faq.map((item) => (
+              <div>
+                <p class="text-sm font-bold text-gray-800 mb-1.5 flex gap-2">
+                  <span class="text-swell-blue">Q.</span>
+                  {item.q}
+                </p>
+                <p class="text-sm text-gray-700 leading-relaxed pl-6">
+                  {item.a}
+                </p>
+              </div>
+            ))}
+          </div>
         </section>
       )}
 
