@@ -23,7 +23,7 @@
     "id": "ai-amigurumi",
     "title": "AIあみぐるみ作家",
     "description": "写真をアップロードするだけで、AIが可愛いあみぐるみのデザインと編み図（レシピ）を自動生成。初心者でも編める詳細なレシピ付き。",
-    "category": "AI・クリエイティブ",
+    "category": "趣味・実用",
     "icon": "🧸",
     "url": "/ai-amigurumi/",
     "storyUrl": "/guide/ai-amigurumi/",
@@ -37,5 +37,14 @@
     "icon": "🔒",
     "url": "/masking-tool/",
     "updatedAt": "2026-05-04"
+  },
+  {
+    "id": "amizu-ai",
+    "title": "AI編み図作成",
+    "description": "段数表（段数・目数・増減数・色）やメモ・写真から、あみぐるみの編み図（アミズ）を自動生成。生成後はキャンバス上で記号の配置や色を自由に編集できる編み図エディタです。",
+    "category": "趣味・実用",
+    "icon": "🪡",
+    "url": "/amizu-ai/",
+    "updatedAt": "2026-08-10"
   }
 ]

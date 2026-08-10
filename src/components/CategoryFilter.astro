@@ -1,0 +1,71 @@
+---
+export interface Props {
+  categories: string[];
+}
+
+const { categories } = Astro.props;
+---
+
+<aside class="lg:w-56 shrink-0 lg:order-2">
+  <div class="lg:sticky lg:top-24">
+    <h4 class="text-sm font-bold text-gray-500 mb-3 lg:mb-4">カテゴリで絞り込む</h4>
+    <div class="flex flex-wrap gap-2 lg:flex-col lg:gap-2" id="category-filter">
+      <button
+        type="button"
+        data-category-filter="all"
+        class="category-filter-btn is-active px-4 py-2 rounded-full lg:rounded-lg text-sm font-bold transition-colors duration-200 text-left"
+      >
+        すべて
+      </button>
+      {categories.map((category) => (
+        <button
+          type="button"
+          data-category-filter={category}
+          class="category-filter-btn px-4 py-2 rounded-full lg:rounded-lg text-sm font-bold transition-colors duration-200 text-left"
+        >
+          {category}
+        </button>
+      ))}
+    </div>
+  </div>
+</aside>
+
+<style>
+  .category-filter-btn {
+    background-color: white;
+    border: 1px solid #e5e7eb;
+    color: #4b5563;
+  }
+  .category-filter-btn:hover {
+    border-color: #3b82f6;
+    color: #3b82f6;
+  }
+  .category-filter-btn.is-active {
+    background-color: #084c7c;
+    border-color: #084c7c;
+    color: white;
+  }
+</style>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.category-filter-btn');
+  const cards = document.querySelectorAll<HTMLElement>('[data-app-id]');
+
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const selected = btn.dataset.categoryFilter ?? 'all';
+
+      buttons.forEach((b) => b.classList.toggle('is-active', b === btn));
+
+      cards.forEach((card) => {
+        const matches = selected === 'all' || card.dataset.category === selected;
+        card.classList.toggle('hidden', !matches);
+      });
+
+      // 「Coming Soon」カードなどカテゴリを持たないカードは「すべて」の時だけ表示する
+      document.querySelectorAll<HTMLElement>('[data-no-category]').forEach((el) => {
+        el.classList.toggle('hidden', selected !== 'all');
+      });
+    });
+  });
+</script>
