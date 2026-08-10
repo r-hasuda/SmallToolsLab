@@ -87,12 +87,6 @@ const app = apps.find(a => a.id === 'knitting-voice-counter');
         <p>
           特に苦労したのは「増やし目」のロジックです。最初はAIに「増やし目して」と軽く伝えただけでは思い通りに動かず、回数カウントがおかしくなってしまいました。そこで、「増やし目モードになってから、奇数回目は1/2回目、偶数回目は2/2回目にして」と細かいロジックを言語化して伝達するなど、的確に指示を出す泥臭いやり取りを重ねて完成に至りました。
         </p>
-        <p class="mt-4">
-          より詳しい開発の裏話や、AIとの具体的なやり取りの様子は、以下のnote記事でまとめています。
-        </p>
-        <p class="mt-4 font-bold">
-          👉 <a href={app?.noteUrl} target="_blank" rel="noopener noreferrer">開発の背景をnoteで読む</a>
-        </p>
       </section>
 
       <section class="bg-blue-50 p-6 rounded-xl mt-12 border border-blue-100">
