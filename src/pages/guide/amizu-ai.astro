@@ -1,0 +1,350 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import apps from '../../data/apps.json';
+
+const app = apps.find((a) => a.id === 'amizu-ai');
+
+const topToolbarButtons = [
+  { name: 'プロジェクト名', desc: '左上のテキストをクリックすると、編み図の名前を変更できます。保存・書き出しのファイル名にも使われます。' },
+  { name: '元に戻す / やり直し', desc: '直前の操作を取り消し・やり直します。Ctrl+Z / Ctrl+Y のショートカットでも操作できます。' },
+  { name: 'グリッド表示', desc: 'キャンバスの下敷きになっているガイド線の表示・非表示を切り替えます。' },
+  { name: '円形 / 方眼グリッド', desc: 'ガイド線を「円形（輪編み用）」と「方眼（平編み用）」で切り替えます。あみぐるみは円形のままでOKです。' },
+  { name: 'スナップ', desc: 'オンにすると、記号をドラッグしたときにグリッドの目盛りにぴたっと吸着します。' },
+  { name: '表から生成', desc: '段数表を入力して編み図を自動生成します。このツールのメイン機能です。' },
+  { name: '開く', desc: '保存しておいた編み図ファイル（.json）を読み込みます。' },
+  { name: '保存', desc: '編み図をファイル（.json）として書き出します。バックアップや、別のパソコンへの持ち運びに使います。' },
+  { name: '書き出し', desc: 'できあがった編み図をPNG画像として保存します。印刷したいときはこちら。' },
+];
+
+const symbolGroups = [
+  { name: '選択 / 移動', desc: '記号を選んだり、動かしたりするモード。編集するときは基本このモードです。' },
+  { name: '鎖・引き抜き編み', desc: '鎖編み / 引き抜き編み / わの作り目（中心マーク）' },
+  { name: '細編み', desc: '×印の細編み。あみぐるみで一番よく使う記号です。' },
+  { name: '増減・編み入れる', desc: '増し目（2目）/ 減らし目 / 3目編み入れる' },
+  { name: '中長編み', desc: '中長編み / 中長編み2目 / 中長編み2目一度' },
+  { name: '長編み / 長々編み', desc: '長編み / 長編み2目 / 長編み3目 / 長々編み' },
+  { name: '引き上げ編み', desc: '長編みの表引き上げ編み' },
+];
+---
+
+<Layout
+  title="使い方：AI編み図作成 | SmallTools Lab"
+  description="AI編み図作成（アミズエディタ）の使い方を、画面のスクリーンショット付きで解説します。段数表からの自動生成、記号の編集、レイヤー管理、保存・書き出しまで。"
+>
+  <Header />
+
+  <main class="max-w-3xl mx-auto px-6 py-16">
+    <div class="mb-10 text-center relative pb-8">
+      <span class="inline-block py-1 px-3 rounded-full bg-blue-100 text-swell-blue text-sm font-bold mb-4">
+        使い方ガイド
+      </span>
+      <h1 class="text-3xl font-bold text-gray-800">AI編み図作成</h1>
+      <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-swell-blue rounded-full"></span>
+    </div>
+
+    <div class="max-w-none space-y-6 text-sm leading-relaxed text-gray-700">
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mb-4 border-l-4 border-swell-blue pl-3">このツールでできること</h2>
+        <p>
+          あみぐるみの本によく載っている「段数・目数・増減数」の表を、そのまま入力するだけで編み図（アミズ）を自動生成するツールです。
+        </p>
+        <p class="mt-3">
+          増し目・減らし目をどこに入れるかは自動で計算して均等に配置するので、自分で1目ずつ数える必要がありません。
+          生成したあとは、キャンバス上で記号を動かしたり色を変えたりして自由に手直しできます。
+        </p>
+        <div class="bg-blue-50 border border-blue-100 rounded-xl p-5 mt-5">
+          <p class="text-sm">
+            <strong>インストール不要・登録不要・無料</strong>です。作業中の内容はブラウザに自動保存されるので、
+            うっかりタブを閉じても次に開いたときに続きから作業できます。
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">画面の見かた</h2>
+        <p>画面は大きく4つのエリアに分かれています。</p>
+        <figure class="my-5">
+          <img
+            src="/images/guide/amizu-ai/01-overview.png"
+            alt="AI編み図作成の全体画面。上部にツールバー、左に記号ツールバー、中央にキャンバス、右にサイドパネルが並んでいる。"
+            class="w-full rounded-xl border border-gray-200 shadow-sm"
+            loading="lazy"
+          />
+        </figure>
+        <ul class="list-disc pl-5 space-y-2">
+          <li><strong>上部のツールバー</strong>：保存・書き出し・「表から生成」など、全体に関わる操作。</li>
+          <li><strong>左の記号ツールバー</strong>：細編み・長編みなど、手で置きたい記号を選ぶ場所。</li>
+          <li><strong>中央のキャンバス</strong>：編み図そのもの。中心の「わ」から外側へ、1段ずつ円を描くように並びます。</li>
+          <li><strong>右のサイドパネル</strong>：上から「プロパティ」「AI編み図生成」「レイヤー」。</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">上部ツールバーのボタン</h2>
+        <figure class="my-5">
+          <img
+            src="/images/guide/amizu-ai/02-toolbar-top.png"
+            alt="上部ツールバー。左からプロジェクト名、元に戻す・やり直し、グリッド表示、円形/方眼切替、スナップ、表から生成、開く、保存、書き出しのボタンが並んでいる。"
+            class="w-full rounded-xl border border-gray-200 shadow-sm"
+            loading="lazy"
+          />
+        </figure>
+        <div class="overflow-x-auto mt-4">
+          <table class="w-full text-sm text-left border border-gray-200 rounded-lg overflow-hidden">
+            <thead class="text-xs text-gray-500 bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th scope="col" class="px-4 py-3 font-medium whitespace-nowrap align-top">ボタン</th>
+                <th scope="col" class="px-4 py-3 font-medium">できること</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              {topToolbarButtons.map((b) => (
+                <tr class="hover:bg-gray-50/50 transition-colors align-top">
+                  <td class="px-4 py-3 whitespace-nowrap font-bold text-gray-800">{b.name}</td>
+                  <td class="px-4 py-3 leading-relaxed">{b.desc}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">
+          「表から生成」で編み図を作る
+        </h2>
+        <p>
+          このツールの中心となる機能です。上部の<strong>「表から生成」</strong>ボタンを押すと、次の入力画面が開きます。
+        </p>
+        <figure class="my-5">
+          <img
+            src="/images/guide/amizu-ai/04-table-modal.png"
+            alt="段数表から編み図を生成する入力画面。パーツ名「あたま」と、1段目6目、2段目12目(+6)、3段目18目(+6)、4段目24目(+6)、5〜8段目24目(増減なし)の表が入力されている。"
+            class="w-full rounded-xl border border-gray-200 shadow-sm"
+            loading="lazy"
+          />
+        </figure>
+
+        <h3 class="text-base font-bold text-gray-800 mt-6 mb-2">入力する項目</h3>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left border border-gray-200 rounded-lg overflow-hidden">
+            <thead class="text-xs text-gray-500 bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th scope="col" class="px-4 py-3 font-medium whitespace-nowrap align-top">項目</th>
+                <th scope="col" class="px-4 py-3 font-medium">入力するもの</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              <tr class="align-top">
+                <td class="px-4 py-3 whitespace-nowrap font-bold text-gray-800">パーツ名</td>
+                <td class="px-4 py-3">「あたま」「からだ」「うで」など。入力した名前で新しいレイヤーが作られます。</td>
+              </tr>
+              <tr class="align-top">
+                <td class="px-4 py-3 whitespace-nowrap font-bold text-gray-800">段数</td>
+                <td class="px-4 py-3">
+                  何段目かを入力します。<strong>「5 〜 8」のように範囲でまとめて入力できる</strong>ので、
+                  「5〜8段目は増減なし」といった指示はまとめて1行で書けます。
+                </td>
+              </tr>
+              <tr class="align-top">
+                <td class="px-4 py-3 whitespace-nowrap font-bold text-gray-800">目数</td>
+                <td class="px-4 py-3">その段を編み終わったときの合計の目数です。</td>
+              </tr>
+              <tr class="align-top">
+                <td class="px-4 py-3 whitespace-nowrap font-bold text-gray-800">増減数</td>
+                <td class="px-4 py-3">
+                  前の段から何目増減するか。<strong>増し目は「6」、減らし目はマイナスをつけて「-6」</strong>、
+                  増減なしは「0」と入力します。
+                </td>
+              </tr>
+              <tr class="align-top">
+                <td class="px-4 py-3 whitespace-nowrap font-bold text-gray-800">色</td>
+                <td class="px-4 py-3">
+                  段ごとの糸の色。「白」「薄橙色」などの名前を選ぶと色が入ります。左の四角を押せば自由な色も指定できます。
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 class="text-base font-bold text-gray-800 mt-6 mb-2">入力のながれ</h3>
+        <ol class="list-decimal pl-5 space-y-2">
+          <li>パーツ名を入力します（例：あたま）。</li>
+          <li>「＋ 行を追加」で段数のぶんだけ行を増やし、本の表を上から順に写していきます。</li>
+          <li>「編み図を生成」を押すと、増減目が均等に配置された編み図がキャンバスに現れます。</li>
+        </ol>
+
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-5 mt-6">
+          <p class="font-bold text-gray-800 mb-2">⚠️ 数が合わないときは教えてくれます</p>
+          <p>
+            「前の段の目数 ＋ 増減数」が入力した目数と合わない場合、生成時に黄色い警告が出ます。
+            表を写し間違えたときに気づけるようになっているので、警告が出たらその段を見直してみてください。
+          </p>
+        </div>
+
+        <div class="bg-gray-50 border border-gray-200 rounded-xl p-5 mt-4">
+          <p class="font-bold text-gray-800 mb-2">増減目の位置について</p>
+          <p>
+            増し目・減らし目は<strong>均等になるように自動配置</strong>されます。
+            本に載っている実際の編み図とは位置が少しずれることがありますが、
+            生成後にキャンバス上で自由に動かせるので、必要なら手で調整してください。
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">記号を手で置く</h2>
+        <p>
+          左のツールバーから記号を選び、キャンバスの好きな場所をクリックすると、その記号が置けます。
+          アイコンによっては押すとメニューが開き、関連する記号を選べます。
+        </p>
+        <figure class="my-5">
+          <img
+            src="/images/guide/amizu-ai/03-toolbar-symbols.png"
+            alt="左の記号ツールバー。「増減・編み入れる」のアイコンを押して、増し目(2目)・減らし目・3目編み入れる のメニューが開いている状態。"
+            class="w-full max-w-md rounded-xl border border-gray-200 shadow-sm"
+            loading="lazy"
+          />
+        </figure>
+        <ul class="list-disc pl-5 space-y-1.5">
+          {symbolGroups.map((g) => (
+            <li><strong>{g.name}</strong>：{g.desc}</li>
+          ))}
+        </ul>
+        <p class="mt-4 text-gray-600">
+          記号を置き終わったら、<strong>「選択 / 移動」</strong>に戻すと、置いた記号をドラッグして動かせます。
+        </p>
+
+        <h3 class="text-base font-bold text-gray-800 mt-6 mb-2">キャンバスの操作</h3>
+        <ul class="list-disc pl-5 space-y-1.5">
+          <li><strong>拡大・縮小</strong>：マウスホイールを回す</li>
+          <li><strong>画面を動かす</strong>：スペースキーを押しながらドラッグ、または「選択 / 移動」中にドラッグ</li>
+          <li><strong>複数選択</strong>：Shiftキーを押しながらクリック</li>
+          <li><strong>削除</strong>：選んでから Delete キー</li>
+          <li><strong>やり直し</strong>：Ctrl+Z（元に戻す）／ Ctrl+Y（やり直し）</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">
+          プロパティ（選んだ記号を編集する）
+        </h2>
+        <p>記号をクリックして選ぶと、右上に「プロパティ」が表示されます。</p>
+        <figure class="my-5">
+          <img
+            src="/images/guide/amizu-ai/05-property-panel.png"
+            alt="プロパティパネル。選択中の記号「増し目(2目)」、「3段目をすべて選択」ボタン、レイヤーへ移動、カラー、線の太さの設定が表示されている。"
+            class="w-full max-w-xs rounded-xl border border-gray-200 shadow-sm"
+            loading="lazy"
+          />
+        </figure>
+        <ul class="list-disc pl-5 space-y-2">
+          <li>
+            <strong>「◯段目をすべて選択」</strong>：押すと、その記号と同じ段の記号がまとめて選ばれます。
+            <span class="text-gray-600">「3段目だけ色を変えたい」というときに便利です。</span>
+          </li>
+          <li>
+            <strong>レイヤーへ移動</strong>：選んでいる記号を、別のレイヤー（パーツ）へまとめて移せます。
+          </li>
+          <li>
+            <strong>カラー</strong>：色を変更します。複数選んでいれば、まとめて変えられます。
+          </li>
+          <li>
+            <strong>線の太さ</strong>：記号の線の太さを調整します。印刷したときに細すぎる場合はここで太くしてください。
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">
+          レイヤー（パーツごとの管理）
+        </h2>
+        <p>
+          あみぐるみは「あたま」「からだ」「うで」など複数のパーツを編みます。
+          このツールでは<strong>パーツごとにレイヤーを分けて管理</strong>できます。
+        </p>
+        <figure class="my-5">
+          <img
+            src="/images/guide/amizu-ai/06-layers.png"
+            alt="レイヤーパネル。うで・からだ・あたま・レイヤー1が並び、それぞれに目のアイコンと鍵のアイコン、マウスを乗せた行にはゴミ箱アイコンが表示されている。"
+            class="w-full max-w-xs rounded-xl border border-gray-200 shadow-sm"
+            loading="lazy"
+          />
+        </figure>
+        <ul class="list-disc pl-5 space-y-2">
+          <li><strong>＋ボタン</strong>：新しいレイヤーを追加します。（「表から生成」で作った場合は自動で追加されます）</li>
+          <li><strong>👁 目のアイコン</strong>：そのレイヤーの表示・非表示を切り替えます。他のパーツを一時的に隠したいときに。</li>
+          <li><strong>🔒 鍵のアイコン</strong>：レイヤーをロックします。完成したパーツを、うっかり動かさないように固定できます。</li>
+          <li><strong>🗑 ゴミ箱</strong>：マウスを乗せると表示されます。そのレイヤーを削除します。</li>
+          <li><strong>レイヤー名をクリック</strong>：作業対象のレイヤーが切り替わります。新しく置いた記号は、選択中のレイヤーに追加されます。</li>
+        </ul>
+        <p class="mt-4 text-gray-600">
+          ※ 非表示・ロック中のレイヤーは編集できません。記号が置けないときは、目や鍵のアイコンを確認してみてください。
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">
+          AIにおまかせで作る
+        </h2>
+        <p>
+          右側の「AI編み図生成」では、表を作らずに<strong>文章のメモや写真から</strong>編み図を作れます。
+        </p>
+        <ul class="list-disc pl-5 space-y-2 mt-3">
+          <li><strong>テキストメモ</strong>：「1段目：わ6、2段目：全部増し目」のように、いつも自分が書いているメモをそのまま貼り付けます。</li>
+          <li><strong>手書きメモ・写真</strong>：ノートに書いた編み方や、本の編み図の写真を読み込ませます。</li>
+        </ul>
+        <p class="mt-3">
+          「自動配置する」を押すと、AIが内容を読み取って記号を並べます。
+        </p>
+        <div class="bg-gray-50 border border-gray-200 rounded-xl p-5 mt-5">
+          <p>
+            AIの読み取りは便利ですが、目数の数え間違いが起きることもあります。
+            <strong>数を正確に合わせたいときは「表から生成」のほうが確実</strong>です（こちらは計算で配置しているため、目数がずれません）。
+            用途に合わせて使い分けてください。
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">保存と書き出し</h2>
+        <ul class="list-disc pl-5 space-y-2">
+          <li>
+            <strong>自動保存</strong>：編集するたびにブラウザへ自動保存されます。タブを閉じても、次に開けば続きから作業できます。
+          </li>
+          <li>
+            <strong>保存（.json）</strong>：編み図データをファイルとして書き出します。バックアップや、別のパソコンへ持っていきたいときに使います。
+          </li>
+          <li>
+            <strong>開く</strong>：保存した .json ファイルを読み込みます。※ 現在の内容は上書きされるので注意してください。
+          </li>
+          <li>
+            <strong>書き出し（PNG）</strong>：完成した編み図を画像として保存します。印刷したり、SNSでシェアしたいときはこちら。
+          </li>
+        </ul>
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-5 mt-5">
+          <p>
+            自動保存はお使いのブラウザの中だけに残ります。ブラウザのデータを消すと編み図も消えてしまうので、
+            大切な編み図は<strong>「保存」でファイルに書き出しておく</strong>と安心です。
+          </p>
+        </div>
+      </section>
+
+    </div>
+
+    <div class="mt-12 text-center">
+      <a
+        href={app?.url}
+        class="inline-block bg-swell-navy text-white font-bold py-4 px-10 rounded-xl hover:bg-swell-navy/90 transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
+      >
+        AI編み図作成 を開く
+      </a>
+    </div>
+
+  </main>
+
+  <Footer />
+</Layout>
