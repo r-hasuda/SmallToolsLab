@@ -111,7 +111,11 @@
             const scaleY = canvas.height / rect.height;
             const mouseX = (e.clientX - rect.left) * scaleX;
             const mouseY = (e.clientY - rect.top) * scaleY;
-            
+
+            // プレビュー描画（半透明の黒＋青枠）を消してから本描画する。
+            // これをしないと、ぼかしモードで枠線ごとぼかされて薄く文字が
+            // 透けて見える不完全なマスクになってしまう。
+            ctx.putImageData(originalImageData, 0, 0);
             drawMask(startX, startY, mouseX - startX, mouseY - startY, true);
             history.push(canvas.toDataURL());
         });
@@ -122,13 +126,26 @@
                 ctx.fillStyle = 'black';
                 ctx.fillRect(x, y, w, h);
             } else if (maskType.value === 'blur') {
-                // 簡易ぼかし実装（一度その部分を取得してフィルターかける）
                 if (apply) {
-                    const padding = 10;
-                    ctx.filter = 'blur(10px)';
-                    // ぼかしを少しはみ出させて自然にする
-                    ctx.drawImage(canvas, x - padding, y - padding, w + padding*2, h + padding*2, x, y, w, h);
-                    ctx.filter = 'none';
+                    // モザイク処理：範囲を極端に縮小してから荒く拡大することで、
+                    // 元の文字を判読不能にする。固定半径のガウスぼかしだと、
+                    // 文字が大きい・太字だと薄っすら読めてしまうことがあるため、
+                    // 情報を確実に破棄できるモザイクに変更している。
+                    const w2 = Math.max(1, Math.round(Math.abs(w)));
+                    const h2 = Math.max(1, Math.round(Math.abs(h)));
+                    const pixelSize = Math.max(4, Math.floor(Math.min(w2, h2) / 8));
+                    const smallW = Math.max(1, Math.round(w2 / pixelSize));
+                    const smallH = Math.max(1, Math.round(h2 / pixelSize));
+
+                    const tmp = document.createElement('canvas');
+                    tmp.width = smallW;
+                    tmp.height = smallH;
+                    const tmpCtx = tmp.getContext('2d');
+                    tmpCtx.drawImage(canvas, x, y, w, h, 0, 0, smallW, smallH);
+
+                    ctx.imageSmoothingEnabled = false;
+                    ctx.drawImage(tmp, 0, 0, smallW, smallH, x, y, w, h);
+                    ctx.imageSmoothingEnabled = true;
                 } else {
                     ctx.fillStyle = 'rgba(0,0,0,0.2)';
                     ctx.fillRect(x, y, w, h);

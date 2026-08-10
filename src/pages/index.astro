@@ -54,19 +54,6 @@ const categories = [...new Set(apps.map((app) => app.category))];
             storyLabel={app.storyLabel}
           />
         ))}
-
-        <!-- Coming Soon カード -->
-        <article data-no-category class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col opacity-60">
-          <div class="h-48 bg-gray-50 flex items-center justify-center">
-            <span class="text-6xl text-gray-200">?</span>
-          </div>
-          <div class="p-6 flex-grow">
-            <h3 class="text-xl font-bold mb-3 text-gray-400">Next App Coming Soon...</h3>
-            <p class="text-gray-400 text-sm leading-relaxed">
-              現在、新しい便利ツールを開発中です。公開をお楽しみに。
-            </p>
-          </div>
-        </article>
       </div>
 
       <CategoryFilter categories={categories} />

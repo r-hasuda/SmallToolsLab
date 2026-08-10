@@ -1,0 +1,197 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import apps from '../../data/apps.json';
+
+const app = apps.find((a) => a.id === 'masking-tool');
+---
+
+<Layout
+  title="使い方：機密情報マスキングツール | SmallTools Lab"
+  description="機密情報マスキングツールの使い方を、画面のスクリーンショット付きで解説します。黒塗り・モザイクの使い分け、元に戻す・保存の操作、画像がサーバーに送信されない仕組みまで。"
+>
+  <Header />
+
+  <main class="max-w-3xl mx-auto px-6 py-16">
+    <div class="mb-10 text-center relative pb-8">
+      <span class="inline-block py-1 px-3 rounded-full bg-blue-100 text-swell-blue text-sm font-bold mb-4">
+        使い方ガイド
+      </span>
+      <h1 class="text-3xl font-bold text-gray-800">機密情報マスキングツール</h1>
+      <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-swell-blue rounded-full"></span>
+    </div>
+
+    <div class="max-w-none space-y-6 text-sm leading-relaxed text-gray-700">
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mb-4 border-l-4 border-swell-blue pl-3">このツールでできること</h2>
+        <p>
+          スクリーンショットや書類の画像に写り込んだ、名前・電話番号・カード番号・住所などの機密情報を、
+          ドラッグするだけで隠せるツールです。
+        </p>
+        <p class="mt-3">
+          SNSに投稿する画面キャプチャ、問い合わせ対応で共有する画面、社外に渡す書類のスキャンなど、
+          「この部分だけ見せたくない」というときにサッと使えます。
+        </p>
+        <div class="bg-blue-50 border border-blue-100 rounded-xl p-5 mt-5">
+          <p class="text-sm">
+            <strong>画像はサーバーに一切送信されません。</strong>
+            アップロードから加工、保存まですべてお使いのブラウザの中だけで処理されるので、
+            機密情報を含む画像を扱う用途でも安心して使えます。インストール・登録も不要です。
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">画面の見かた</h2>
+        <p>開いた直後はこのような画面です。上の操作パネルと、画像を読み込む枠だけのシンプルな構成です。</p>
+        <figure class="my-5">
+          <img
+            src="/images/guide/masking-tool/01-initial.png"
+            alt="機密情報マスキングツールの初期画面。上部に「画像を選択」「黒塗り/ぼかし」「元に戻す」「すべて消去」「加工して保存」のボタンが並び、下に画像を読み込む枠がある。"
+            class="w-full max-w-lg mx-auto rounded-xl border border-gray-200 shadow-sm"
+            loading="lazy"
+          />
+        </figure>
+        <ul class="list-disc pl-5 space-y-2">
+          <li><strong>画像を選択</strong>：マスキングしたい画像ファイルを読み込みます。</li>
+          <li><strong>黒塗り / ぼかし</strong>：隠し方の種類を切り替えます。</li>
+          <li><strong>元に戻す</strong>：直前の1回分のマスキングを取り消します。</li>
+          <li><strong>すべて消去</strong>：すべてのマスキングを取り消し、元の画像に戻します。</li>
+          <li><strong>加工して保存</strong>：加工した状態の画像をPNGとしてダウンロードします。</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">使い方</h2>
+        <ol class="list-decimal pl-5 space-y-3">
+          <li>
+            <strong>「画像を選択」</strong>から、マスキングしたい画像を読み込みます。
+            <figure class="my-4">
+              <img
+                src="/images/guide/masking-tool/02-uploaded.png"
+                alt="画像を読み込んだ直後の画面。会員証のサンプル画像が表示されている。"
+                class="w-full rounded-xl border border-gray-200 shadow-sm"
+                loading="lazy"
+              />
+            </figure>
+          </li>
+          <li>
+            隠し方（<strong>黒塗り</strong> または <strong>ぼかし</strong>）を選びます。
+          </li>
+          <li>
+            隠したい部分を、そのまま<strong>ドラッグして囲みます</strong>。マウスを離すとその範囲が加工されます。
+          </li>
+          <li>
+            隠しすぎた・位置がずれたときは<strong>「元に戻す」</strong>で1回分だけ取り消せます。
+            最初からやり直したいときは<strong>「すべて消去」</strong>を使ってください。
+          </li>
+          <li>
+            隠し終わったら<strong>「加工して保存」</strong>で画像として保存します。
+          </li>
+        </ol>
+        <figure class="my-5">
+          <img
+            src="/images/guide/masking-tool/04-masked.png"
+            alt="会員番号を黒塗り、電話番号をモザイクでマスキングした結果の画面。"
+            class="w-full rounded-xl border border-gray-200 shadow-sm"
+            loading="lazy"
+          />
+          <figcaption class="text-xs text-gray-500 text-center mt-2">
+            会員番号を黒塗り、電話番号をモザイクで隠した例
+          </figcaption>
+        </figure>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">
+          黒塗りとぼかし、どちらを使うべき？
+        </h2>
+        <ul class="list-disc pl-5 space-y-3">
+          <li>
+            <strong>黒塗り</strong>：完全に塗りつぶすので、確実に見えなくしたいときに。カード番号・電話番号など数字を隠すなら基本はこちらがおすすめです。
+          </li>
+          <li>
+            <strong>ぼかし（モザイク）</strong>：元の画像の雰囲気を残しつつ、内容だけ判読できないようにします。
+            顔写真など「そこに何かがあることは分かってよいが、詳細は見せたくない」ものに向いています。
+          </li>
+        </ul>
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-5 mt-5">
+          <p>
+            ぼかしは範囲を細かいブロックに分解して読み取れなくする方式（モザイク）です。
+            うっすら文字が透けて見えるような弱いぼかしにはならないよう作られていますが、
+            <strong>本当に見られたくない情報（パスワードや口座番号など）は、念のため黒塗りを使うことをおすすめします。</strong>
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">操作パネル早見表</h2>
+        <figure class="my-5">
+          <img
+            src="/images/guide/masking-tool/05-controls.png"
+            alt="操作パネルのクローズアップ。画像を選択、黒塗り/ぼかしの選択、元に戻す、すべて消去、加工して保存の5つのボタンが並んでいる。"
+            class="w-full max-w-lg mx-auto rounded-xl border border-gray-200 shadow-sm"
+            loading="lazy"
+          />
+        </figure>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm text-left border border-gray-200 rounded-lg overflow-hidden">
+            <thead class="text-xs text-gray-500 bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th scope="col" class="px-4 py-3 font-medium whitespace-nowrap align-top">ボタン</th>
+                <th scope="col" class="px-4 py-3 font-medium">できること</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              <tr class="align-top">
+                <td class="px-4 py-3 whitespace-nowrap font-bold text-gray-800">画像を選択</td>
+                <td class="px-4 py-3">パソコン・スマホ内の画像を読み込みます。</td>
+              </tr>
+              <tr class="align-top">
+                <td class="px-4 py-3 whitespace-nowrap font-bold text-gray-800">黒塗り / ぼかし</td>
+                <td class="px-4 py-3">次にドラッグしたときの隠し方を選びます。作業の途中で切り替えてもOKです。</td>
+              </tr>
+              <tr class="align-top">
+                <td class="px-4 py-3 whitespace-nowrap font-bold text-gray-800">元に戻す</td>
+                <td class="px-4 py-3">直前のマスキング1回分だけを取り消します。</td>
+              </tr>
+              <tr class="align-top">
+                <td class="px-4 py-3 whitespace-nowrap font-bold text-gray-800">すべて消去</td>
+                <td class="px-4 py-3">確認ダイアログのあと、読み込んだ直後の状態まで一気に戻します。</td>
+              </tr>
+              <tr class="align-top">
+                <td class="px-4 py-3 whitespace-nowrap font-bold text-gray-800">加工して保存</td>
+                <td class="px-4 py-3">今の状態の画像をPNGファイルとしてダウンロードします。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">こんな場面で便利です</h2>
+        <ul class="list-disc pl-5 space-y-2">
+          <li>SNSやブログに載せる操作画面のスクリーンショットから、アカウント情報や個人名を隠したいとき</li>
+          <li>問い合わせ・サポート対応で、エラー画面などを共有する前に不要な情報を隠したいとき</li>
+          <li>社外に共有する資料の画像から、社内限定の数値や名前を隠したいとき</li>
+          <li>身分証や会員証の画像から、番号だけを隠して一部の情報だけを見せたいとき</li>
+        </ul>
+      </section>
+
+    </div>
+
+    <div class="mt-12 text-center">
+      <a
+        href={app?.url}
+        class="inline-block bg-swell-navy text-white font-bold py-4 px-10 rounded-xl hover:bg-swell-navy/90 transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
+      >
+        機密情報マスキングツール を開く
+      </a>
+    </div>
+
+  </main>
+
+  <Footer />
+</Layout>
