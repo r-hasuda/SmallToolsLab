@@ -1,0 +1,157 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import apps from '../../data/apps.json';
+
+const app = apps.find((a) => a.id === 'screenshot-stitcher');
+---
+
+<Layout
+  title="使い方：スクリーンショット結合ツール | SmallTools Lab"
+  description="スクリーンショット結合ツールの使い方を、画面のスクリーンショット付きで解説します。縦・横の結合、並び替え、揃え方、間隔調整まで。"
+>
+  <Header />
+
+  <main class="max-w-3xl mx-auto px-6 py-16">
+    <div class="mb-10 text-center relative pb-8">
+      <span class="inline-block py-1 px-3 rounded-full bg-blue-100 text-swell-blue text-sm font-bold mb-4">
+        使い方ガイド
+      </span>
+      <h1 class="text-3xl font-bold text-gray-800">スクリーンショット結合ツール</h1>
+      <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-swell-blue rounded-full"></span>
+    </div>
+
+    <div class="max-w-none space-y-6 text-sm leading-relaxed text-gray-700">
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mb-4 border-l-4 border-swell-blue pl-3">このツールでできること</h2>
+        <p>
+          分割して撮った複数のスクリーンショットを、1枚のつながった画像にまとめるツールです。
+          問い合わせ対応でエラー画面を共有するとき、操作手順書を作るとき、長いページをスクロールしながら撮った画像をまとめたいときなどに使えます。
+        </p>
+        <div class="bg-blue-50 border border-blue-100 rounded-xl p-5 mt-5">
+          <p class="text-sm">
+            <strong>画像はサーバーに一切送信されません。</strong>
+            アップロードから結合、保存まですべてお使いのブラウザの中だけで処理されます。インストール・登録も不要です。
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">画面の見かた</h2>
+        <p>開いた直後はこのような画面です。上に操作パネル、その下に画像リストと結合結果のプレビューが表示されます。</p>
+        <figure class="my-5">
+          <img
+            src="/images/guide/screenshot-stitcher/01-empty.png"
+            alt="スクリーンショット結合ツールの初期画面。「＋画像を追加」ボタン、縦に結合/横に結合の選択、揃え方の選択、間隔(px)の入力欄、すべて削除・結合して保存ボタンが並び、下に画像をドラッグ＆ドロップできる枠がある。"
+            class="w-full rounded-xl border border-gray-200 shadow-sm"
+            loading="lazy"
+          />
+        </figure>
+        <ul class="list-disc pl-5 space-y-2">
+          <li><strong>＋ 画像を追加</strong>：結合したい画像を選びます（複数選択可）。下の枠に直接ドラッグ＆ドロップしても追加できます。</li>
+          <li><strong>縦に結合／横に結合</strong>：画像を上下に並べるか、左右に並べるかを選びます。</li>
+          <li><strong>揃え方</strong>：幅（または高さ）が異なる画像を、どちらに寄せて並べるかを選びます。</li>
+          <li><strong>間隔(px)</strong>：画像と画像の間に空けるすき間の大きさです。0でぴったりくっつきます。</li>
+          <li><strong>すべて削除</strong>：追加した画像をすべて取り消します。</li>
+          <li><strong>結合して保存</strong>：結合した画像をPNGファイルとしてダウンロードします。</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">使い方</h2>
+        <ol class="list-decimal pl-5 space-y-2">
+          <li>「＋ 画像を追加」から結合したい画像をまとめて選びます（順番はあとから変更できます）。</li>
+          <li>画像を追加すると、一覧に並んで表示され、下のプレビューに結合結果がリアルタイムで反映されます。</li>
+          <li>「縦に結合／横に結合」「揃え方」「間隔」を必要に応じて調整します。</li>
+          <li>結果に問題なければ「結合して保存」でPNG画像として保存します。</li>
+        </ol>
+        <figure class="my-5">
+          <img
+            src="/images/guide/screenshot-stitcher/02-uploaded-vertical.png"
+            alt="幅の異なる3枚の画像（900×150、700×400、900×100）を縦に結合した状態。画像一覧にサムネイルと▲▼（並び替え）・×削除ボタンが並び、下のプレビューでは幅の狭い画像が中央揃えで表示されている。"
+            class="w-full rounded-xl border border-gray-200 shadow-sm"
+            loading="lazy"
+          />
+        </figure>
+        <div class="bg-gray-50 border border-gray-200 rounded-xl p-5 mt-5">
+          <p class="font-bold text-gray-800 mb-2">📤 実際の結合結果はこうなります</p>
+          <img
+            src="/images/guide/screenshot-stitcher/03-result-vertical.png"
+            alt="縦結合の実際の出力結果。幅の異なる3枚の画像が中央揃えで縦に並んでいる。"
+            class="max-w-xs mx-auto rounded-lg border border-gray-200 mt-3"
+            loading="lazy"
+          />
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">並び順を変える・削除する</h2>
+        <p>画像一覧の各行にあるボタンで、追加した画像を調整できます。</p>
+        <ul class="list-disc pl-5 space-y-2">
+          <li><strong>▲／▼</strong>：その画像を1つ前・後ろへ移動します。</li>
+          <li><strong>✕ 削除</strong>：その画像だけを一覧から取り除きます。</li>
+        </ul>
+        <p class="mt-3">操作するたびに、下のプレビューが自動で更新されます。</p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">横に結合する</h2>
+        <p>
+          「横に結合」を選ぶと、画像が左から右へ順番に並びます。揃え方の選択肢も「上揃え／中央揃え／下揃え」に切り替わります。
+        </p>
+        <figure class="my-5">
+          <img
+            src="/images/guide/screenshot-stitcher/04-horizontal-controls.png"
+            alt="横に結合を選んだ状態の操作パネルと画像一覧。揃え方の選択肢が上揃え・中央揃え・下揃えに変わっている。"
+            class="w-full rounded-xl border border-gray-200 shadow-sm"
+            loading="lazy"
+          />
+        </figure>
+        <div class="bg-gray-50 border border-gray-200 rounded-xl p-5 mt-5">
+          <p class="font-bold text-gray-800 mb-2">📤 横結合の実際の結果</p>
+          <img
+            src="/images/guide/screenshot-stitcher/05-result-horizontal.png"
+            alt="横結合の実際の出力結果。高さの異なる3枚の画像が中央揃えで横に並んでいる。"
+            class="w-full rounded-lg border border-gray-200 mt-3"
+            loading="lazy"
+          />
+        </div>
+        <p class="mt-4 text-gray-600">
+          比較画像を並べて見せたいときや、複数の操作ステップを1枚の横長画像にまとめたいときに便利です。
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">こんな場面で便利です</h2>
+        <ul class="list-disc pl-5 space-y-2">
+          <li>スクロールしながら撮った複数の画面キャプチャを、1枚の長い画像にまとめたいとき</li>
+          <li>問い合わせ・サポート対応で、手順ごとのスクリーンショットを1枚にまとめて送りたいとき</li>
+          <li>Before/Afterのように、2枚の画像を横に並べて比較したいとき</li>
+          <li>操作マニュアルや資料に、複数の画面キャプチャを1枚にまとめて貼り付けたいとき</li>
+        </ul>
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-5 mt-5">
+          <p>
+            機密情報が写り込んだ画像を結合する場合は、先に
+            <a href="/masking-tool/" class="text-swell-blue hover:underline font-medium">機密情報マスキングツール</a>
+            で該当箇所を隠してから結合すると安心です。
+          </p>
+        </div>
+      </section>
+
+    </div>
+
+    <div class="mt-12 text-center">
+      <a
+        href={app?.url}
+        class="inline-block bg-swell-navy text-white font-bold py-4 px-10 rounded-xl hover:bg-swell-navy/90 transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
+      >
+        スクリーンショット結合ツール を開く
+      </a>
+    </div>
+
+  </main>
+
+  <Footer />
+</Layout>

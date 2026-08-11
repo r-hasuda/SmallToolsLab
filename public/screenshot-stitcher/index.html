@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="複数のスクリーンショットを1枚の画像につなげます。画像はブラウザ内で処理され、サーバーに送信されることはありません。">
+    <title>スクリーンショット結合ツール</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f7f6; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        h1 { text-align: center; }
+        .lead { text-align: center; color: #555; margin-bottom: 10px; }
+        .controls { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: center; max-width: 900px; }
+        button, select, .btn-primary { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-family: inherit; font-size: 14px; }
+        select { font-weight: normal; border: 1px solid #ccc; background: white; }
+        .btn-primary { background-color: #0d47a1; color: white; display: inline-block; }
+        .btn-secondary { background-color: #e0e0e0; color: #333; }
+        .btn-danger { background-color: #d32f2f; color: white; }
+        input[type="file"] { display: none; }
+        .gap-field { display: flex; align-items: center; gap: 6px; font-size: 14px; color: #333; }
+        .gap-field input { width: 60px; padding: 6px; border: 1px solid #ccc; border-radius: 4px; }
+
+        #listContainer { width: 100%; max-width: 900px; margin-bottom: 20px; }
+        .item-row { display: flex; align-items: center; gap: 12px; background: white; border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
+        .item-row .thumb { max-height: 60px; max-width: 90px; object-fit: contain; border: 1px solid #eee; border-radius: 4px; background: #fafafa; }
+        .item-row .item-name { flex: 1; font-size: 13px; color: #444; word-break: break-all; }
+        .item-actions { display: flex; gap: 4px; }
+        .item-actions button { padding: 4px 8px; background: #f0f0f0; color: #333; font-weight: normal; }
+        .item-actions button:disabled { opacity: 0.3; cursor: not-allowed; }
+        .item-actions .remove-btn { color: #d32f2f; }
+
+        #canvas-container { border: 2px dashed #ccc; background: white; position: relative; max-width: 95vw; max-height: 65vh; overflow: auto; border-radius: 8px; }
+        #canvas-container.drag-over { border-color: #0d47a1; background: #eef4ff; }
+        canvas { display: block; }
+        .empty-hint { padding: 60px 30px; text-align: center; color: #888; }
+
+        .hint { color: #666; font-size: 0.85rem; margin-top: 16px; text-align: center; }
+    </style>
+</head>
+<body>
+    <h1>🖼️ スクリーンショット結合ツール</h1>
+    <p class="lead">複数のスクリーンショットをドラッグ&ドロップ、または選択して1枚の画像につなげます。</p>
+
+    <div class="controls">
+        <label class="btn-primary">
+            + 画像を追加
+            <input type="file" id="imageInput" accept="image/*" multiple>
+        </label>
+
+        <select id="direction">
+            <option value="vertical">縦に結合</option>
+            <option value="horizontal">横に結合</option>
+        </select>
+
+        <select id="align"></select>
+
+        <div class="gap-field">
+            <label for="gap">間隔(px)</label>
+            <input type="number" id="gap" value="0" min="0">
+        </div>
+
+        <button class="btn-secondary" id="clearBtn">すべて削除</button>
+        <button class="btn-primary" id="downloadBtn">結合して保存</button>
+    </div>
+
+    <div id="listContainer"></div>
+
+    <div id="canvas-container">
+        <div class="empty-hint" id="emptyHint">ここに画像をドラッグ＆ドロップ、または上の「＋ 画像を追加」から選択してください</div>
+        <canvas id="previewCanvas"></canvas>
+    </div>
+
+    <p class="hint">※処理はすべてお使いのブラウザ内で行われます。画像がサーバーに送信されることはありません。</p>
+
+    <script>
+        const imageInput = document.getElementById('imageInput');
+        const listContainer = document.getElementById('listContainer');
+        const canvas = document.getElementById('previewCanvas');
+        const ctx = canvas.getContext('2d');
+        const canvasContainer = document.getElementById('canvas-container');
+        const emptyHint = document.getElementById('emptyHint');
+        const directionSel = document.getElementById('direction');
+        const alignSel = document.getElementById('align');
+        const gapInput = document.getElementById('gap');
+        const clearBtn = document.getElementById('clearBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        let items = [];
+        let idCounter = 0;
+
+        function updateAlignOptions() {
+            const dir = directionSel.value;
+            const opts = dir === 'vertical'
+                ? [['left', '左揃え'], ['center', '中央揃え'], ['right', '右揃え']]
+                : [['top', '上揃え'], ['center', '中央揃え'], ['bottom', '下揃え']];
+            alignSel.innerHTML = opts.map(([v, l]) => `<option value="${v}">${l}</option>`).join('');
+            alignSel.value = 'center';
+        }
+        updateAlignOptions();
+
+        function handleFiles(fileList) {
+            const files = Array.from(fileList).filter((f) => f.type.startsWith('image/'));
+            files.forEach((file) => {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        items.push({ id: idCounter++, img, name: file.name, width: img.width, height: img.height });
+                        renderList();
+                        render();
+                    };
+                    img.src = ev.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        imageInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+            imageInput.value = '';
+        });
+
+        // ドラッグ＆ドロップ対応
+        ['dragenter', 'dragover'].forEach((evt) => {
+            canvasContainer.addEventListener(evt, (e) => {
+                e.preventDefault();
+                canvasContainer.classList.add('drag-over');
+            });
+        });
+        ['dragleave', 'drop'].forEach((evt) => {
+            canvasContainer.addEventListener(evt, (e) => {
+                e.preventDefault();
+                canvasContainer.classList.remove('drag-over');
+            });
+        });
+        canvasContainer.addEventListener('drop', (e) => {
+            if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
+        });
+
+        function renderList() {
+            listContainer.innerHTML = '';
+            items.forEach((item, index) => {
+                const row = document.createElement('div');
+                row.className = 'item-row';
+
+                const thumb = document.createElement('img');
+                thumb.className = 'thumb';
+                thumb.src = item.img.src;
+                row.appendChild(thumb);
+
+                const name = document.createElement('span');
+                name.className = 'item-name';
+                name.textContent = `${index + 1}. ${item.name} (${item.width}×${item.height})`;
+                row.appendChild(name);
+
+                const actions = document.createElement('div');
+                actions.className = 'item-actions';
+
+                const upBtn = document.createElement('button');
+                upBtn.type = 'button';
+                upBtn.textContent = '▲';
+                upBtn.disabled = index === 0;
+                upBtn.addEventListener('click', () => moveItem(item.id, -1));
+                actions.appendChild(upBtn);
+
+                const downBtn = document.createElement('button');
+                downBtn.type = 'button';
+                downBtn.textContent = '▼';
+                downBtn.disabled = index === items.length - 1;
+                downBtn.addEventListener('click', () => moveItem(item.id, 1));
+                actions.appendChild(downBtn);
+
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.textContent = '✕ 削除';
+                removeBtn.className = 'remove-btn';
+                removeBtn.addEventListener('click', () => removeItem(item.id));
+                actions.appendChild(removeBtn);
+
+                row.appendChild(actions);
+                listContainer.appendChild(row);
+            });
+        }
+
+        function moveItem(id, delta) {
+            const idx = items.findIndex((i) => i.id === id);
+            const newIdx = idx + delta;
+            if (idx === -1 || newIdx < 0 || newIdx >= items.length) return;
+            [items[idx], items[newIdx]] = [items[newIdx], items[idx]];
+            renderList();
+            render();
+        }
+
+        function removeItem(id) {
+            items = items.filter((i) => i.id !== id);
+            renderList();
+            render();
+        }
+
+        clearBtn.addEventListener('click', () => {
+            if (items.length === 0) return;
+            if (confirm('すべての画像を削除しますか？')) {
+                items = [];
+                renderList();
+                render();
+            }
+        });
+
+        directionSel.addEventListener('change', () => { updateAlignOptions(); render(); });
+        alignSel.addEventListener('change', render);
+        gapInput.addEventListener('input', render);
+
+        function render() {
+            if (items.length === 0) {
+                canvas.style.display = 'none';
+                emptyHint.style.display = 'block';
+                return;
+            }
+            canvas.style.display = 'block';
+            emptyHint.style.display = 'none';
+
+            const dir = directionSel.value;
+            const align = alignSel.value;
+            const gap = Math.max(0, parseInt(gapInput.value, 10) || 0);
+
+            if (dir === 'vertical') {
+                const maxWidth = Math.max(...items.map((i) => i.width));
+                const totalHeight = items.reduce((sum, i) => sum + i.height, 0) + gap * (items.length - 1);
+                canvas.width = maxWidth;
+                canvas.height = totalHeight;
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                let y = 0;
+                for (const item of items) {
+                    let x = 0;
+                    if (align === 'center') x = (maxWidth - item.width) / 2;
+                    else if (align === 'right') x = maxWidth - item.width;
+                    ctx.drawImage(item.img, x, y);
+                    y += item.height + gap;
+                }
+            } else {
+                const maxHeight = Math.max(...items.map((i) => i.height));
+                const totalWidth = items.reduce((sum, i) => sum + i.width, 0) + gap * (items.length - 1);
+                canvas.width = totalWidth;
+                canvas.height = maxHeight;
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                let x = 0;
+                for (const item of items) {
+                    let y = 0;
+                    if (align === 'center') y = (maxHeight - item.height) / 2;
+                    else if (align === 'bottom') y = maxHeight - item.height;
+                    ctx.drawImage(item.img, x, y);
+                    x += item.width + gap;
+                }
+            }
+        }
+
+        downloadBtn.addEventListener('click', () => {
+            if (items.length === 0) {
+                alert('結合する画像を追加してください。');
+                return;
+            }
+            const link = document.createElement('a');
+            link.download = 'stitched_image.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+
+        render();
+    </script>
+</body>
+</html>
