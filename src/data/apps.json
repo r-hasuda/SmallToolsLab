@@ -61,5 +61,16 @@
     "storyUrl": "/guide/screenshot-stitcher/",
     "storyLabel": "使い方",
     "updatedAt": "2026-08-11"
+  },
+  {
+    "id": "yarn-calculator",
+    "title": "編み図の毛糸使用量計算機",
+    "description": "編み図の目数から、必要な毛糸の長さ・重さ・玉数の目安を計算します。試し編みの実測値を入れれば、自分の編み方に合わせてより正確に見積もれます。",
+    "category": "趣味・実用",
+    "icon": "🧵",
+    "url": "/yarn-calculator/",
+    "storyUrl": "/guide/yarn-calculator/",
+    "storyLabel": "使い方",
+    "updatedAt": "2026-08-11"
   }
 ]

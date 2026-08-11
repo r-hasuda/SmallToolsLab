@@ -1,0 +1,164 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Header from '../../components/Header.astro';
+import Footer from '../../components/Footer.astro';
+import apps from '../../data/apps.json';
+
+const app = apps.find((a) => a.id === 'yarn-calculator');
+---
+
+<Layout
+  title="使い方：編み図の毛糸使用量計算機 | SmallTools Lab"
+  description="編み図の毛糸使用量計算機の使い方を、画面のスクリーンショット付きで解説します。目数の入力、毛糸の太さ、試し編みによる実測での精度アップまで。"
+>
+  <Header />
+
+  <main class="max-w-3xl mx-auto px-6 py-16">
+    <div class="mb-10 text-center relative pb-8">
+      <span class="inline-block py-1 px-3 rounded-full bg-blue-100 text-swell-blue text-sm font-bold mb-4">
+        使い方ガイド
+      </span>
+      <h1 class="text-3xl font-bold text-gray-800">編み図の毛糸使用量計算機</h1>
+      <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-swell-blue rounded-full"></span>
+    </div>
+
+    <div class="max-w-none space-y-6 text-sm leading-relaxed text-gray-700">
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mb-4 border-l-4 border-swell-blue pl-3">このツールでできること</h2>
+        <p>
+          「この毛糸、何玉買えば足りるんだろう？」というあみぐるみ・かぎ針編みでよくある悩みに、編み図の目数から目安を答えるツールです。
+          パーツごとの目数と編み目の種類を入力するだけで、必要な糸の長さ・重さ・玉数を計算します。
+        </p>
+        <div class="bg-blue-50 border border-blue-100 rounded-xl p-5 mt-5">
+          <p class="text-sm">
+            <strong>糸の消費量は編み手の力加減やかぎ針のサイズで大きく変わります。</strong>
+            このツールでは、実際に少し編んでみた分量から自分の編み方に合わせて調整できる「実測モード」を用意しています。
+          </p>
+        </div>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">① パーツごとの目数を入力</h2>
+        <p>
+          胴体・手・足など、パーツごとに「パーツ名」「目数」「主に使う編み目」を入力します。
+          <a href="/amizu-ai/" class="text-swell-blue hover:underline font-medium">AI編み図作成</a>
+          で作った編み図があれば、そこに書かれている合計目数を使うとスムーズです。
+        </p>
+        <figure class="my-5">
+          <img
+            src="/images/guide/yarn-calculator/02-rows.png"
+            alt="パーツごとの目数を入力する表。パーツ名、目数、編み目（プルダウン）の列があり、胴体150目、手30目、足40目、すべて細編みが入力されている。「＋行を追加」ボタンがある。"
+            class="w-full rounded-xl border border-gray-200 shadow-sm"
+            loading="lazy"
+          />
+        </figure>
+        <p>「＋ 行を追加」でパーツを増やせます。行の右の「✕」で削除できます。</p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">② 毛糸の太さを選ぶ</h2>
+        <p>
+          極細・合太・中細・並太・極太の5段階から選びます。太さに応じて、編み目ごとの1目あたりの目安消費量が自動で切り替わります。
+        </p>
+        <ul class="list-disc pl-5 space-y-1 mt-3">
+          <li><strong>くさり編み</strong>：約1.2cm/目（並太の場合）</li>
+          <li><strong>細編み</strong>：約2.5cm/目</li>
+          <li><strong>中長編み</strong>：約4.0cm/目</li>
+          <li><strong>長編み</strong>：約5.5cm/目</li>
+        </ul>
+        <p class="mt-3 text-gray-600">
+          これらはあくまで一般的な目安の数値です。より正確に知りたい場合は、次の「実測で調整」をお使いください。
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">③ 実測で精度を上げる（おすすめ）</h2>
+        <p>
+          このツールでいちばん重要な機能です。実際にお使いの毛糸とかぎ針で少し編んでみて、
+          <strong>使った目数と、その部分の糸の長さ</strong>を測って入力すると、あなたの編み方・毛糸に合わせた消費量に更新されます。
+        </p>
+        <figure class="my-5">
+          <img
+            src="/images/guide/yarn-calculator/03-calibrate.png"
+            alt="実測で調整セクション。編み目の種類「細編み」、試し編みの目数「20」、使った糸の長さ「60」(cm)を入力し、「この実測値を使う」ボタンがある。"
+            class="w-full rounded-xl border border-gray-200 shadow-sm"
+            loading="lazy"
+          />
+        </figure>
+        <ol class="list-decimal pl-5 space-y-2">
+          <li>使う毛糸とかぎ針で、細編みなら20目ほど試し編みをします。</li>
+          <li>編んだ部分をほどく（または編む前に糸端に印をつけておく）などして、使った糸の長さを定規で測ります。</li>
+          <li>編み目の種類・試し編みの目数・使った糸の長さを入力し、「この実測値を使う」を押します。</li>
+        </ol>
+        <p class="mt-3">
+          反映されると、②の表にその編み目だけ「実測」の緑タグが表示され、以降の計算はこの実測値をもとに行われます。
+        </p>
+        <figure class="my-5">
+          <img
+            src="/images/guide/yarn-calculator/04-rate-updated.png"
+            alt="実測値を反映した後の消費量の表。細編みの行だけ「3.00 cm / 目」となり、右側のタグが緑色の「実測」に変わっている。他の編み目は「目安」のまま。"
+            class="w-full rounded-xl border border-gray-200 shadow-sm"
+            loading="lazy"
+          />
+        </figure>
+        <p class="text-gray-600">「実測値をリセット」を押すと、太さによる目安の数値に戻せます。</p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">④ 毛糸1玉の情報を入力する</h2>
+        <p>
+          お使いになる毛糸のラベルに書かれている「長さ(m)」と「重さ(g)」を入力してください。太さを変えると目安の値が自動で入りますが、
+          <strong>実際に使う毛糸のラベルの数値に置き換えることをおすすめします。</strong>
+          あわせて、「念のため15%多めに見積もる」にチェックを入れておくと、結び目のロスや編み直し分の余裕を持たせられます。
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">計算結果の見かた</h2>
+        <figure class="my-5">
+          <img
+            src="/images/guide/yarn-calculator/05-result.png"
+            alt="計算結果のパネル。合計目数220目、必要な糸の長さ約7.6m、目安の重さ約3g、必要な玉数1玉と表示され、下に「この計算はあくまで目安です」という注意書きがある。"
+            class="w-full rounded-xl border border-gray-200 shadow-sm"
+            loading="lazy"
+          />
+        </figure>
+        <ul class="list-disc pl-5 space-y-2">
+          <li><strong>合計目数</strong>：入力したすべてのパーツの目数の合計です。</li>
+          <li><strong>必要な糸の長さ</strong>：計算された目安の長さ（メートル）です。</li>
+          <li><strong>目安の重さ</strong>：入力した1玉の重さ・長さから換算したグラム数です。</li>
+          <li><strong>必要な玉数</strong>：1玉のメートル数から、何玉あれば足りるかを切り上げで表示します。</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">こんな場面で便利です</h2>
+        <ul class="list-disc pl-5 space-y-2">
+          <li>あみぐるみを編む前に、毛糸を何玉買えばいいか知りたいとき</li>
+          <li>手持ちの毛糸の残り分で、目的のサイズが編み切れるか確認したいとき</li>
+          <li>色を変えるパーツごとに、それぞれどのくらい糸が必要か把握したいとき</li>
+        </ul>
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-5 mt-5">
+          <p>
+            この計算はあくまで目安です。かぎ針のサイズ・編む力加減・毛糸の種類によって実際の消費量は変わります。
+            心配な場合は、計算結果より少し多めに毛糸を用意することをおすすめします。
+          </p>
+        </div>
+      </section>
+
+    </div>
+
+    <div class="mt-12 text-center">
+      <a
+        href={app?.url}
+        class="inline-block bg-swell-navy text-white font-bold py-4 px-10 rounded-xl hover:bg-swell-navy/90 transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
+      >
+        編み図の毛糸使用量計算機 を開く
+      </a>
+    </div>
+
+  </main>
+
+  <Footer />
+</Layout>

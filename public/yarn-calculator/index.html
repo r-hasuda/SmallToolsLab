@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="編み図の目数から、必要な毛糸の長さ・重さ・玉数を計算します。試し編みの実測値でより正確に見積もれます。">
+    <title>編み図の毛糸使用量計算機</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f7f6; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        h1 { text-align: center; margin-bottom: 4px; }
+        .lead { text-align: center; color: #555; margin-bottom: 20px; max-width: 640px; }
+        .panel { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; width: 100%; max-width: 760px; box-sizing: border-box; }
+        .panel h2 { margin: 0 0 14px; font-size: 17px; color: #1a1a1a; }
+        .panel .sub { font-size: 12.5px; color: #777; margin: -8px 0 14px; line-height: 1.6; }
+
+        table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+        th, td { padding: 6px 4px; text-align: left; font-size: 13px; }
+        th { color: #666; font-weight: 600; border-bottom: 1px solid #ddd; }
+        td input[type="text"], td input[type="number"] { width: 100%; box-sizing: border-box; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; font-size: 13px; }
+        td select { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; font-size: 13px; background: white; }
+        td.col-num { width: 90px; }
+        td.col-stitch { width: 130px; }
+        td.col-remove { width: 34px; text-align: center; }
+
+        button { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-family: inherit; font-size: 14px; }
+        .btn-primary { background-color: #0d47a1; color: white; }
+        .btn-secondary { background-color: #e0e0e0; color: #333; }
+        .btn-text { background: transparent; color: #d32f2f; font-weight: normal; padding: 4px 6px; font-size: 15px; }
+        .btn-add { background: none; color: #0d47a1; font-weight: bold; padding: 4px 0; }
+
+        .field-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
+        .field { flex: 1; min-width: 140px; }
+        .field label { display: block; font-size: 12.5px; color: #555; margin-bottom: 4px; }
+        .field input, .field select { width: 100%; box-sizing: border-box; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-family: inherit; font-size: 14px; }
+
+        .rate-table { width: 100%; font-size: 13px; border-collapse: collapse; margin-top: 10px; }
+        .rate-table th, .rate-table td { padding: 6px 8px; border-bottom: 1px solid #eee; }
+        .rate-tag { font-size: 11px; padding: 2px 6px; border-radius: 10px; background: #e0e0e0; color: #555; }
+        .rate-tag.calibrated { background: #c8e6c9; color: #1b5e20; }
+
+        .checkbox-row { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #333; margin-top: 10px; }
+
+        .result { text-align: center; }
+        .result .big { font-size: 34px; font-weight: 900; color: #0d47a1; margin: 4px 0; }
+        .result .grid { display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-top: 16px; }
+        .result .grid div { text-align: center; }
+        .result .grid .label { font-size: 12.5px; color: #777; }
+        .result .grid .value { font-size: 20px; font-weight: 700; color: #1a1a1a; }
+
+        .hint { color: #666; font-size: 0.85rem; margin-top: 6px; text-align: center; max-width: 640px; }
+        .warn { background: #fff8e1; border: 1px solid #ffe082; border-radius: 6px; padding: 10px 14px; font-size: 12.5px; color: #6d4c00; margin-top: 10px; line-height: 1.6; }
+    </style>
+</head>
+<body>
+    <h1>🧶 編み図の毛糸使用量計算機</h1>
+    <p class="lead">編み図の目数から、必要な毛糸の長さ・重さ・玉数の目安を計算します。実際の消費量は編み手の力加減やかぎ針のサイズで変わるため、あくまで目安としてご利用ください。</p>
+
+    <div class="panel">
+        <h2>① パーツごとの目数を入力</h2>
+        <p class="sub">胴体・手・足など、パーツごとに目数と主に使う編み目を入力してください。行は追加できます。</p>
+        <table id="rowsTable">
+            <thead>
+                <tr>
+                    <th>パーツ名</th>
+                    <th class="col-num">目数</th>
+                    <th class="col-stitch">編み目</th>
+                    <th class="col-remove"></th>
+                </tr>
+            </thead>
+            <tbody id="rowsBody"></tbody>
+        </table>
+        <button type="button" class="btn-add" id="addRowBtn">＋ 行を追加</button>
+    </div>
+
+    <div class="panel">
+        <h2>② 毛糸の太さ</h2>
+        <div class="field-row">
+            <div class="field">
+                <label for="thickness">毛糸の太さ</label>
+                <select id="thickness">
+                    <option value="gokuboso">極細</option>
+                    <option value="aibuto">合太</option>
+                    <option value="nakaboso">中細</option>
+                    <option value="namibuto" selected>並太</option>
+                    <option value="gokubuto">極太</option>
+                </select>
+            </div>
+        </div>
+
+        <table class="rate-table">
+            <thead>
+                <tr><th>編み目</th><th>1目あたりの目安消費量</th><th></th></tr>
+            </thead>
+            <tbody id="rateTableBody"></tbody>
+        </table>
+        <p class="sub" style="margin-top:10px;">上の数値は太さによる目安です。より正確に知りたい場合は、下の「実測で調整」をお使いください。</p>
+    </div>
+
+    <div class="panel">
+        <h2>③ 実測で調整（任意・おすすめ）</h2>
+        <p class="sub">実際にその毛糸で少し編んでみて、使った目数と長さを測って入力すると、あなたの編み方に合わせた消費量に調整できます。</p>
+        <div class="field-row">
+            <div class="field">
+                <label for="calStitch">編み目の種類</label>
+                <select id="calStitch">
+                    <option value="chain">くさり編み</option>
+                    <option value="sc" selected>細編み</option>
+                    <option value="hdc">中長編み</option>
+                    <option value="dc">長編み</option>
+                </select>
+            </div>
+            <div class="field">
+                <label for="calCount">試し編みの目数</label>
+                <input type="number" id="calCount" placeholder="例: 20" min="1">
+            </div>
+            <div class="field">
+                <label for="calLength">使った糸の長さ(cm)</label>
+                <input type="number" id="calLength" placeholder="例: 55" min="1">
+            </div>
+        </div>
+        <button type="button" class="btn-secondary" id="calibrateBtn">この実測値を使う</button>
+        <button type="button" class="btn-text" id="resetCalBtn" style="color:#777;">実測値をリセット</button>
+    </div>
+
+    <div class="panel">
+        <h2>④ 毛糸1玉の情報</h2>
+        <p class="sub">お使いになる毛糸のラベルに書かれている「長さ」と「重さ」を入力してください（太さを変えると目安の値が自動で入ります）。</p>
+        <div class="field-row">
+            <div class="field">
+                <label for="ballLength">1玉の長さ(m)</label>
+                <input type="number" id="ballLength" min="1">
+            </div>
+            <div class="field">
+                <label for="ballWeight">1玉の重さ(g)</label>
+                <input type="number" id="ballWeight" min="1">
+            </div>
+        </div>
+        <div class="checkbox-row">
+            <input type="checkbox" id="marginCheck" checked>
+            <label for="marginCheck">念のため15%多めに見積もる（結び目のロスや編み直しに備える）</label>
+        </div>
+    </div>
+
+    <div class="panel result">
+        <h2 style="text-align:center;">計算結果</h2>
+        <div class="label">合計目数</div>
+        <div class="big" id="resultStitches">0 目</div>
+        <div class="grid">
+            <div>
+                <div class="label">必要な糸の長さ</div>
+                <div class="value" id="resultLength">0 m</div>
+            </div>
+            <div>
+                <div class="label">目安の重さ</div>
+                <div class="value" id="resultWeight">0 g</div>
+            </div>
+            <div>
+                <div class="label">必要な玉数</div>
+                <div class="value" id="resultBalls">0 玉</div>
+            </div>
+        </div>
+        <div class="warn">
+            ⚠ この計算はあくまで目安です。かぎ針のサイズ・編む力加減・毛糸の種類によって実際の消費量は変わります。心配な場合は多めに毛糸を用意することをおすすめします。
+        </div>
+    </div>
+
+    <p class="hint">※計算はすべてお使いのブラウザ内で行われます。入力内容がサーバーに送信されることはありません。</p>
+
+    <script>
+        const STITCH_LABELS = { chain: 'くさり編み', sc: '細編み', hdc: '中長編み', dc: '長編み' };
+
+        // 並太を基準(倍率1.0)としたときの、1目あたりの目安消費量(cm)
+        const BASE_RATES = { chain: 1.2, sc: 2.5, hdc: 4.0, dc: 5.5 };
+        let calibratedRates = {}; // 実測で上書きされた場合の値(cm/目、並太換算前)
+
+        const THICKNESS = {
+            gokuboso: { label: '極細', mult: 0.55, defaultM: 210, defaultG: 25 },
+            aibuto:   { label: '合太', mult: 0.75, defaultM: 120, defaultG: 30 },
+            nakaboso: { label: '中細', mult: 0.9,  defaultM: 150, defaultG: 40 },
+            namibuto: { label: '並太', mult: 1.0,  defaultM: 100, defaultG: 40 },
+            gokubuto: { label: '極太', mult: 1.35, defaultM: 60,  defaultG: 40 },
+        };
+
+        let rows = [];
+        let rowIdCounter = 0;
+
+        const rowsBody = document.getElementById('rowsBody');
+        const addRowBtn = document.getElementById('addRowBtn');
+        const thicknessSel = document.getElementById('thickness');
+        const rateTableBody = document.getElementById('rateTableBody');
+        const calStitchSel = document.getElementById('calStitch');
+        const calCountInput = document.getElementById('calCount');
+        const calLengthInput = document.getElementById('calLength');
+        const calibrateBtn = document.getElementById('calibrateBtn');
+        const resetCalBtn = document.getElementById('resetCalBtn');
+        const ballLengthInput = document.getElementById('ballLength');
+        const ballWeightInput = document.getElementById('ballWeight');
+        const marginCheck = document.getElementById('marginCheck');
+
+        addRowBtn.addEventListener('click', () => addRow());
+
+        function addRow(partName, stitchCount, stitchType) {
+            rows.push({
+                id: rowIdCounter++,
+                partName: partName ?? '',
+                stitchCount: stitchCount ?? 0,
+                stitchType: stitchType ?? 'sc',
+            });
+            renderRows();
+            calculate();
+        }
+
+        function removeRow(id) {
+            if (rows.length <= 1) return;
+            rows = rows.filter((r) => r.id !== id);
+            renderRows();
+            calculate();
+        }
+
+        function renderRows() {
+            rowsBody.innerHTML = '';
+            rows.forEach((row) => {
+                const tr = document.createElement('tr');
+
+                const nameTd = document.createElement('td');
+                const nameInput = document.createElement('input');
+                nameInput.type = 'text';
+                nameInput.placeholder = '例: 胴体';
+                nameInput.value = row.partName;
+                nameInput.addEventListener('input', (e) => { row.partName = e.target.value; });
+                nameTd.appendChild(nameInput);
+                tr.appendChild(nameTd);
+
+                const countTd = document.createElement('td');
+                countTd.className = 'col-num';
+                const countInput = document.createElement('input');
+                countInput.type = 'number';
+                countInput.min = '0';
+                countInput.value = row.stitchCount;
+                countInput.addEventListener('input', (e) => {
+                    row.stitchCount = parseInt(e.target.value, 10) || 0;
+                    calculate();
+                });
+                countTd.appendChild(countInput);
+                tr.appendChild(countTd);
+
+                const stitchTd = document.createElement('td');
+                stitchTd.className = 'col-stitch';
+                const stitchSelect = document.createElement('select');
+                Object.entries(STITCH_LABELS).forEach(([value, label]) => {
+                    const opt = document.createElement('option');
+                    opt.value = value;
+                    opt.textContent = label;
+                    if (value === row.stitchType) opt.selected = true;
+                    stitchSelect.appendChild(opt);
+                });
+                stitchSelect.addEventListener('change', (e) => {
+                    row.stitchType = e.target.value;
+                    calculate();
+                });
+                stitchTd.appendChild(stitchSelect);
+                tr.appendChild(stitchTd);
+
+                const removeTd = document.createElement('td');
+                removeTd.className = 'col-remove';
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'btn-text';
+                removeBtn.textContent = '✕';
+                removeBtn.disabled = rows.length <= 1;
+                removeBtn.addEventListener('click', () => removeRow(row.id));
+                removeTd.appendChild(removeBtn);
+                tr.appendChild(removeTd);
+
+                rowsBody.appendChild(tr);
+            });
+        }
+
+        function currentRate(stitchType) {
+            // 実測値があればそれを優先、なければ太さ倍率をかけた基準値
+            if (calibratedRates[stitchType] != null) return calibratedRates[stitchType];
+            const mult = THICKNESS[thicknessSel.value].mult;
+            return BASE_RATES[stitchType] * mult;
+        }
+
+        function renderRateTable() {
+            rateTableBody.innerHTML = '';
+            Object.keys(STITCH_LABELS).forEach((stitchType) => {
+                const tr = document.createElement('tr');
+                const isCalibrated = calibratedRates[stitchType] != null;
+                tr.innerHTML = `
+                    <td>${STITCH_LABELS[stitchType]}</td>
+                    <td>${currentRate(stitchType).toFixed(2)} cm / 目</td>
+                    <td><span class="rate-tag ${isCalibrated ? 'calibrated' : ''}">${isCalibrated ? '実測' : '目安'}</span></td>
+                `;
+                rateTableBody.appendChild(tr);
+            });
+        }
+
+        thicknessSel.addEventListener('change', () => {
+            const t = THICKNESS[thicknessSel.value];
+            ballLengthInput.value = t.defaultM;
+            ballWeightInput.value = t.defaultG;
+            renderRateTable();
+            calculate();
+        });
+
+        calibrateBtn.addEventListener('click', () => {
+            const count = parseFloat(calCountInput.value);
+            const length = parseFloat(calLengthInput.value);
+            if (!count || !length || count <= 0 || length <= 0) {
+                alert('試し編みの目数と、使った糸の長さを正しく入力してください。');
+                return;
+            }
+            calibratedRates[calStitchSel.value] = length / count;
+            renderRateTable();
+            calculate();
+        });
+
+        resetCalBtn.addEventListener('click', () => {
+            calibratedRates = {};
+            renderRateTable();
+            calculate();
+        });
+
+        [ballLengthInput, ballWeightInput].forEach((el) => el.addEventListener('input', calculate));
+        marginCheck.addEventListener('change', calculate);
+
+        function calculate() {
+            const totalStitches = rows.reduce((sum, r) => sum + (r.stitchCount || 0), 0);
+            const totalCm = rows.reduce((sum, r) => sum + (r.stitchCount || 0) * currentRate(r.stitchType), 0);
+            let totalM = totalCm / 100;
+            if (marginCheck.checked) totalM *= 1.15;
+
+            const ballM = parseFloat(ballLengthInput.value) || 0;
+            const ballG = parseFloat(ballWeightInput.value) || 0;
+            const weightG = ballM > 0 ? totalM * (ballG / ballM) : 0;
+            const ballsNeeded = ballM > 0 ? Math.ceil(totalM / ballM) : 0;
+
+            document.getElementById('resultStitches').textContent = `${totalStitches.toLocaleString()} 目`;
+            document.getElementById('resultLength').textContent = `約 ${totalM.toFixed(1)} m`;
+            document.getElementById('resultWeight').textContent = ballM > 0 ? `約 ${Math.round(weightG)} g` : '---';
+            document.getElementById('resultBalls').textContent = ballM > 0 ? `${ballsNeeded} 玉` : '---';
+        }
+
+        // 初期化
+        const initThickness = THICKNESS[thicknessSel.value];
+        ballLengthInput.value = initThickness.defaultM;
+        ballWeightInput.value = initThickness.defaultG;
+        renderRateTable();
+        addRow('胴体', 150, 'sc');
+        addRow('手', 30, 'sc');
+        addRow('足', 40, 'sc');
+    </script>
+</body>
+</html>
