@@ -9,7 +9,7 @@ const app = apps.find(a => a.id === 'knitting-voice-counter');
 
 <Layout
   title="使い方＆開発ストーリー：編み物音声カウンター | SmallTools Lab"
-  description="編み物音声カウンターの詳しい使い方と、AIと一緒に自作した開発の裏話・ストーリーをご紹介します。"
+  description="編み物音声カウンターの使い方を、画面のスクリーンショット付きで解説します。声・タップでのカウント方法、円編みナビモード、音声コマンド一覧まで。"
 >
   <Header />
 
@@ -24,11 +24,8 @@ const app = apps.find(a => a.id === 'knitting-voice-counter');
       <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-swell-blue rounded-full"></span>
     </div>
 
-    <!-- AdSense Placeholder (Top) -->
-    <!-- <div class="max-w-prose mx-auto mb-10 text-center"><ins class="adsbygoogle" data-ad-slot="XXXXXXXXXX"></ins></div> -->
+    <div class="max-w-none space-y-6 text-sm leading-relaxed text-gray-700">
 
-    <div class="prose prose-gray prose-a:text-swell-blue prose-a:no-underline hover:prose-a:underline max-w-none space-y-6 text-sm leading-relaxed text-gray-700">
-      
       <section>
         <h2 class="text-xl font-bold text-gray-800 mb-4 border-l-4 border-swell-blue pl-3">編み物音声カウンターとは？</h2>
         <p>
@@ -37,30 +34,120 @@ const app = apps.find(a => a.id === 'knitting-voice-counter');
         </p>
         <p>
           この「編み物音声カウンター」は、1目編むごとに声に出してカウントを進められる、完全ハンズフリーの補助ツールです。
+          もちろん、画面をタップして数えることもできます。
         </p>
       </section>
 
       <section>
-        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">便利な機能と使い方</h2>
-        <p>
-          マイクへのアクセスを許可し、以下の音声コマンドを話しかけるだけで操作できます。
-        </p>
-        <ul class="list-disc pl-5 space-y-2 mt-4">
-          <li><strong>「はい」</strong>：目数が +1 されます。</li>
-          <li><strong>「次」</strong>：段数が進み、目数がリセットされます。</li>
-          <li><strong>「戻して」</strong>：間違えて音声認識されてしまった時に、1つ前の状態に戻せます。</li>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">画面の見かた</h2>
+        <p>画面はスマホ1台で編み物をしながら操作できるよう、大きな数字とボタンだけのシンプルな構成になっています。</p>
+        <figure class="my-5">
+          <img
+            src="/images/guide/knitting-voice-counter/01-initial.png"
+            alt="編み物音声カウンターの初期画面。上に段数「1」、その下に円編みナビモードのトグル、中央に大きく目数「0」、下に細編み/増やし目/減らし目のステータスボタン、マイクON・戻る・初期化ボタン、使い方・Amazon・楽天へのフッターリンクが並んでいる。"
+            class="w-full max-w-xs mx-auto rounded-xl border border-gray-200 shadow-sm"
+            loading="lazy"
+          />
+        </figure>
+        <ul class="list-disc pl-5 space-y-2">
+          <li><strong>段数</strong>：現在何段目かを表示。タップすると次の段へ進みます。</li>
+          <li><strong>円編みナビモード</strong>：あみぐるみの円編みパターンを自動でナビゲートしてくれる機能（後述）。</li>
+          <li><strong>目数</strong>：現在の段で何目編んだかを表示。タップすると+1されます。</li>
+          <li><strong>細編み／増やし目／減らし目</strong>：現在の編み方モードを切り替えるボタン。選択中は色が変わります。</li>
+          <li><strong>マイクON／戻る／初期化</strong>：音声認識の開始・停止、1つ前に戻す、すべてリセットする操作ボタンです。</li>
         </ul>
+      </section>
 
-        <h3 class="text-lg font-bold text-gray-800 mt-8 mb-3">🧶 おすすめ機能：円編みナビモード</h3>
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">基本の使い方（音声コマンド）</h2>
+        <p>
+          「マイクON」を押してマイクへのアクセスを許可すると、以下の音声コマンドを話しかけるだけで操作できます。
+          画面の「段数」や「目数」エリアを直接タップしてもカウントできます。
+        </p>
+        <div class="overflow-x-auto mt-4">
+          <table class="w-full text-sm text-left border border-gray-200 rounded-lg overflow-hidden">
+            <thead class="text-xs text-gray-500 bg-gray-50 border-b border-gray-200">
+              <tr>
+                <th scope="col" class="px-4 py-3 font-medium whitespace-nowrap align-top">話しかける言葉</th>
+                <th scope="col" class="px-4 py-3 font-medium">できること</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              <tr class="align-top">
+                <td class="px-4 py-3 whitespace-nowrap font-bold text-gray-800">「はい」</td>
+                <td class="px-4 py-3">目数を +1 します。</td>
+              </tr>
+              <tr class="align-top">
+                <td class="px-4 py-3 whitespace-nowrap font-bold text-gray-800">「次」</td>
+                <td class="px-4 py-3">段数が進み、目数がリセットされます。</td>
+              </tr>
+              <tr class="align-top">
+                <td class="px-4 py-3 whitespace-nowrap font-bold text-gray-800">「細編み」「増やし目」「減らし目」</td>
+                <td class="px-4 py-3">編み方モードを手動で切り替えます。</td>
+              </tr>
+              <tr class="align-top">
+                <td class="px-4 py-3 whitespace-nowrap font-bold text-gray-800">「戻して」「間違えた」</td>
+                <td class="px-4 py-3">間違えて音声認識されてしまった時に、1つ前の状態に戻します。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <figure class="my-5">
+          <img
+            src="/images/guide/knitting-voice-counter/02-stitch-counted.png"
+            alt="目数が3までカウントされた状態。中央の数字が大きく光って表示されている。"
+            class="w-full max-w-xs mx-auto rounded-xl border border-gray-200 shadow-sm"
+            loading="lazy"
+          />
+          <figcaption class="text-xs text-gray-500 text-center mt-2">
+            「はい」と言う（またはタップする）たびに、目数が+1されて光ります
+          </figcaption>
+        </figure>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">増やし目・減らし目モード</h2>
+        <p>
+          「増やし目」または「減らし目」ボタンを押す（または声に出す）と、1目で2目分・0.5目分としてカウントするモードに切り替わります。
+        </p>
+        <figure class="my-5">
+          <img
+            src="/images/guide/knitting-voice-counter/03-increase-mode.png"
+            alt="増やし目モードに切り替えた状態。増やし目ボタンが黄色くハイライトされ、目数の下に「増やし目：0/2回目」という補助表示が出ている。"
+            class="w-full max-w-xs mx-auto rounded-xl border border-gray-200 shadow-sm"
+            loading="lazy"
+          />
+          <figcaption class="text-xs text-gray-500 text-center mt-2">
+            増やし目モード中は「◯/2回目」の補助表示で、今どちらの目を編んでいるか分かります
+          </figcaption>
+        </figure>
+        <p>
+          増やし目モードでは、「1目に2目編み入れる」という動作を「はい」を2回言うことでカウントします。補助表示を見ながら編めば、
+          今どちらの目を編んでいるか迷いません。
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">🧶 おすすめ機能：円編みナビモード</h2>
         <p>
           あみぐるみのベースなどで多用する、「(細1、増) × 6」といった円編みのパターン。いちいち編み図を見て確認する手間を省くための強力なサポート機能です。
         </p>
-        <p>
-          画面の「🧶 円編みナビモード」をONにすると、現在の段数から「次はどう編むか」をアプリが自動で計算してナビゲートします。<br>
-          あなたはただ「はい」と唱えるだけ。アプリが勝手に「次は細編み」「次は増やし目」とモードを切り替え、1周分が終わると「段が完了しました！」と通知して次の段へ進みます。
-        </p>
-        <p>
-          途中で平編みや減らし目になった場合でも、画面上のボタンで簡単に部分修正（オーバーライド）が可能。その後は修正されたパターンに合わせて自動案内を継続します。
+        <figure class="my-5">
+          <img
+            src="/images/guide/knitting-voice-counter/05-navi-mode.png"
+            alt="円編みナビモードをONにした画面。段数2、細編み0＋増、現在のループ進捗1/6と表示され、目数エリアには「増やし目：0/2回目」の表示、増やし目ボタンが自動でハイライトされている。"
+            class="w-full max-w-xs mx-auto rounded-xl border border-gray-200 shadow-sm"
+            loading="lazy"
+          />
+        </figure>
+        <ol class="list-decimal pl-5 space-y-2">
+          <li>画面右上の「円編みナビモード」をタップしてONにします。</li>
+          <li>現在の段数から、次はどう編むか（細編みの数と増減の種類）をアプリが自動で計算してくれます。</li>
+          <li>あなたはただ「はい」と唱える（またはタップする）だけ。1周分が終わると「段が完了しました！」と通知して自動的に次の段へ進みます。</li>
+          <li>途中で平編みや減らし目になった場合でも、パターン編集の矢印ボタンや「増／減／平」ボタンで簡単に部分修正（オーバーライド）できます。</li>
+        </ol>
+        <p class="mt-3">
+          修正後は、その内容に合わせて自動案内が継続されます。あみぐるみを編む機会が多い方には特におすすめの機能です。
         </p>
       </section>
 
@@ -76,6 +163,7 @@ const app = apps.find(a => a.id === 'knitting-voice-counter');
         </ul>
         <p class="mt-4">
           静かな部屋で黙々と編む分には快適に動作しますが、環境によっては誤認識が発生する可能性がある点をご了承ください。
+          うまく反応しないときは、画面をタップする方法に切り替えても快適に使えます。
         </p>
       </section>
 
@@ -97,9 +185,6 @@ const app = apps.find(a => a.id === 'knitting-voice-counter');
       </section>
 
     </div>
-
-    <!-- AdSense Placeholder (Bottom) -->
-    <!-- <div class="max-w-prose mx-auto mt-10 text-center"><ins class="adsbygoogle" data-ad-slot="XXXXXXXXXX"></ins></div> -->
 
     <!-- CTA Button -->
     <div class="mt-12 text-center">

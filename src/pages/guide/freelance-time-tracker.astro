@@ -9,7 +9,7 @@ const app = apps.find(a => a.id === 'freelance-time-tracker');
 
 <Layout
   title="使い方＆開発ストーリー：在宅副業タイムトラッカー | SmallTools Lab"
-  description="在宅副業タイムトラッカーの使い方と機能。案件ごとの作業時間と実質時給を可視化し、適切な単価交渉のタイミングを知らせます。"
+  description="在宅副業タイムトラッカーの使い方を、画面のスクリーンショット付きで解説します。案件の登録方法、ダブルタイマーの使い分け、アラート設定、実質時給の見かたまで。"
 >
   <Header />
 
@@ -24,51 +24,133 @@ const app = apps.find(a => a.id === 'freelance-time-tracker');
       <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-swell-blue rounded-full"></span>
     </div>
 
-    <!-- AdSense Placeholder (Top) -->
-    <!-- <div class="max-w-prose mx-auto mb-10 text-center"><ins class="adsbygoogle" data-ad-slot="XXXXXXXXXX"></ins></div> -->
+    <div class="max-w-none space-y-6 text-sm leading-relaxed text-gray-700">
 
-    <div class="prose prose-gray prose-a:text-swell-blue prose-a:no-underline hover:prose-a:underline max-w-none space-y-6 text-sm leading-relaxed text-gray-700">
-      
       <section>
         <h2 class="text-xl font-bold text-gray-800 mb-4 border-l-4 border-swell-blue pl-3">在宅副業タイムトラッカーとは？</h2>
         <p>
-          在宅副業ワーカーやフリーランス向けのタイムトラッカー（時間計測）アプリケーションです。<br>
-          案件ごとの「作業時間」と「実質時給」を可視化し、予定外の追加作業による「スコープクリープ（作業範囲の肥大化）」を防ぐことを目的としています。<br>
+          在宅副業ワーカーやフリーランス向けのタイムトラッカー（時間計測）アプリです。案件ごとの「作業時間」と「実質時給」を可視化し、
+          予定外の追加作業による「スコープクリープ（作業範囲の肥大化）」を防ぐことを目的としています。
           時給換算での稼働状況をリアルタイムで把握できるため、適切な単価交渉のタイミングを知らせてくれます。
         </p>
+        <div class="bg-blue-50 border border-blue-100 rounded-xl p-5 mt-5">
+          <p class="text-sm">
+            <strong>インストール不要・登録不要・無料</strong>です。登録した案件やタイマーの経過時間はブラウザに自動保存されるので、
+            画面を閉じても続きから計測できます。
+          </p>
+        </div>
       </section>
 
       <section>
-        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">主な機能と使い方</h2>
-        
-        <h3 class="text-lg font-bold text-gray-800 mt-6 mb-2">リアルタイムの実質時給計算</h3>
-        <p>
-          現在のペースで作業し続けた場合の「実質時給」を自動計算して強調表示します（※計算の極端なブレを防ぐため、作業開始から5分後に表示されます）。
-        </p>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">案件を登録する</h2>
+        <p>まず、案件名と予定報酬額を入力します。あわせて、単価交渉のためのアラートも任意で設定できます。</p>
+        <figure class="my-5">
+          <img
+            src="/images/guide/freelance-time-tracker/01-initial.png"
+            alt="在宅副業タイムトラッカーの初期画面。案件名、予定報酬額（円）の入力欄と、単価交渉のためのアラート設定（予定外作業が○分を超えたら警告、実質時給が○円を下回ったら警告）、案件を追加するボタンが表示されている。"
+            class="w-full rounded-xl border border-gray-200 shadow-sm"
+            loading="lazy"
+          />
+        </figure>
+        <ol class="list-decimal pl-5 space-y-2">
+          <li><strong>案件名</strong>：管理しやすい名前を入力します（例：ブログ記事執筆）。</li>
+          <li><strong>予定報酬額（円）</strong>：その案件でもらえる金額を入力します。実質時給の計算に使われます。</li>
+          <li>
+            <strong>アラート設定（任意）</strong>：チェックを入れると、しきい値を数字で指定できます。
+            <ul class="list-disc pl-5 mt-2 space-y-1">
+              <li>予定外作業が指定した分数を超えたら警告</li>
+              <li>実質時給が指定した金額を下回ったら警告</li>
+            </ul>
+          </li>
+          <li><strong>「案件を追加する」</strong>を押すと、下の「進行中の案件」に案件カードが追加されます。</li>
+        </ol>
+        <figure class="my-5">
+          <img
+            src="/images/guide/freelance-time-tracker/02-alert-settings.png"
+            alt="アラート設定にチェックを入れ、予定外作業30分、実質時給1500円のしきい値を入力した状態。チェックを入れると数値入力欄が有効になる。"
+            class="w-full rounded-xl border border-gray-200 shadow-sm"
+            loading="lazy"
+          />
+          <figcaption class="text-xs text-gray-500 text-center mt-2">
+            チェックを入れると数値入力欄が使えるようになります
+          </figcaption>
+        </figure>
+      </section>
 
-        <h3 class="text-lg font-bold text-gray-800 mt-6 mb-2">ダブルタイマー機能</h3>
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">ダブルタイマーで計測する</h2>
         <p>
-          「通常作業」タイマーと「予定外・追加」タイマーを搭載しています。<br>
-          どちらか一方を再生すると、もう一方は自動で一時停止する排他制御が行われるため、余計な操作ミスを防ぎ正確な計測が可能です。
+          案件を追加すると、<strong>「通常作業」</strong>と<strong>「予定外・追加」</strong>、2つの独立したタイマーが表示されます。
         </p>
+        <figure class="my-5">
+          <img
+            src="/images/guide/freelance-time-tracker/03-project-card.png"
+            alt="案件が追加された直後の案件カード。通常作業と予定外・追加、両方のタイマーが00:00:00でスタートボタンが表示されている。右上に現在の実質時給の枠がある。"
+            class="w-full rounded-xl border border-gray-200 shadow-sm"
+            loading="lazy"
+          />
+        </figure>
+        <p>
+          普段の作業には<strong>「通常作業」</strong>、クライアントから急に頼まれた追加対応や、当初の見積もりになかった作業には
+          <strong>「予定外・追加」</strong>のタイマーを使い分けます。
+        </p>
+        <figure class="my-5">
+          <img
+            src="/images/guide/freelance-time-tracker/04-timer-running.png"
+            alt="通常作業タイマーが動作中の状態。通常作業の枠が紫色でハイライトされ、一時停止ボタンが表示されている。予定外・追加はスタートボタンのまま。"
+            class="w-full rounded-xl border border-gray-200 shadow-sm"
+            loading="lazy"
+          />
+          <figcaption class="text-xs text-gray-500 text-center mt-2">
+            動作中のタイマーはハイライト表示され、ボタンが「一時停止」に変わります
+          </figcaption>
+        </figure>
 
-        <h3 class="text-lg font-bold text-gray-800 mt-6 mb-2">アラート設定によるスコープクリープ防止</h3>
-        <p>
-          予定外作業の時間が設定した「上限時間（分）」を超えると警告メッセージを表示します。<br>
-          さらに、実質時給が設定した「下限金額（円）」を下回った場合にも警告メッセージを表示し、クライアントへの単価交渉の必要性を客観的な数値で知らせてくれます。
-        </p>
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-5 mt-5">
+          <p class="font-bold text-gray-800 mb-2">⚡ どちらか一方しか動かせません（排他制御）</p>
+          <p>
+            「予定外・追加」のスタートを押すと、動いていた「通常作業」は自動で一時停止します。逆も同様です。
+            切り替え忘れで二重に計測してしまうミスを防ぐしくみです。
+          </p>
+        </div>
+        <figure class="my-5">
+          <img
+            src="/images/guide/freelance-time-tracker/05-extra-timer.png"
+            alt="予定外・追加のタイマーに切り替えた状態。予定外・追加の枠がオレンジ色でハイライトされ一時停止ボタンが表示されている一方、通常作業は自動的に一時停止しスタートボタンに戻っている。カード下部には削除・完了とするボタンがある。"
+            class="w-full rounded-xl border border-gray-200 shadow-sm"
+            loading="lazy"
+          />
+          <figcaption class="text-xs text-gray-500 text-center mt-2">
+            「予定外・追加」を開始すると、動いていた「通常作業」が自動で一時停止する
+          </figcaption>
+        </figure>
+        <ul class="list-disc pl-5 space-y-2 mt-4">
+          <li><strong>削除</strong>：案件をリストから削除します。</li>
+          <li><strong>完了とする</strong>：作業を終えた案件を完了扱いにします。</li>
+        </ul>
+      </section>
 
-        <h3 class="text-lg font-bold text-gray-800 mt-6 mb-2">データの自動保存</h3>
-        <p>
-          登録した案件やタイマーの経過時間は、お使いのブラウザ（ローカルストレージ）に自動的に保存されます。<br>
-          画面を閉じても作業データは復元されるため安心です。
-        </p>
+      <section>
+        <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">実質時給とアラートの見かた</h2>
+        <ul class="list-disc pl-5 space-y-3">
+          <li>
+            <strong>現在の実質時給</strong>：現在のペースで作業し続けた場合の時給換算額を自動計算して表示します。
+            計算の極端なブレを防ぐため、<strong>作業開始から5分後</strong>に表示され、それまでは「---」と表示されます。
+          </li>
+          <li>
+            <strong>予定外作業のアラート</strong>：登録時に設定した時間を超えると警告が表示されます。「そろそろこの作業は追加費用の相談が必要かも」という目安になります。
+          </li>
+          <li>
+            <strong>実質時給のアラート</strong>：実質時給が設定した金額を下回ると警告が表示されます。客観的な数値で単価交渉の必要性に気づけます。
+          </li>
+        </ul>
       </section>
 
       <section>
         <h2 class="text-xl font-bold text-gray-800 mt-10 mb-4 border-l-4 border-swell-blue pl-3">開発の背景</h2>
         <p>
-          このアプリは、フリーランスとして働く中で感じる「結局これ、時給換算していくらになっているんだろう？」という不安や、「ちょっとした修正や追加作業」が積み重なることによる疲弊を防ぐために開発しました。
+          このアプリは、フリーランスとして働く中で感じる「結局これ、時給換算していくらになっているんだろう？」という不安や、
+          「ちょっとした修正や追加作業」が積み重なることによる疲弊を防ぐために開発しました。
         </p>
         <p>
           客観的な時間と時給のデータがあれば、「ここまで作業したので、これ以上は追加費用としてご相談させてください」とスマートに交渉できるはず。そんな想いで作っています。
@@ -83,9 +165,6 @@ const app = apps.find(a => a.id === 'freelance-time-tracker');
       </section>
 
     </div>
-
-    <!-- AdSense Placeholder (Bottom) -->
-    <!-- <div class="max-w-prose mx-auto mt-10 text-center"><ins class="adsbygoogle" data-ad-slot="XXXXXXXXXX"></ins></div> -->
 
     <!-- CTA Button -->
     <div class="mt-12 text-center flex flex-col items-center">
