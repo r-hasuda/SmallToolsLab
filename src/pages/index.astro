@@ -7,9 +7,33 @@ import CategoryFilter from '../components/CategoryFilter.astro';
 import apps from '../data/apps.json';
 
 const categories = [...new Set(apps.map((app) => app.category))];
+
+const siteURL = new URL('/', Astro.site);
+
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'SmallTools Lab',
+  url: siteURL.href,
+  description: '個人開発者が作る、インストール不要のWeb便利アプリ。すべて無料・登録なしで使えます。',
+  inLanguage: 'ja',
+};
+
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'SmallTools Lab',
+  url: siteURL.href,
+  logo: new URL('/favicon.svg', Astro.site).href,
+};
 ---
 
 <Layout>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(websiteSchema)} />
+    <script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
+  </Fragment>
+
   <Header />
 
   <!-- ヒーローセクション -->
@@ -20,9 +44,9 @@ const categories = [...new Set(apps.map((app) => app.category))];
       <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl"></div>
     </div>
     <div class="max-w-3xl mx-auto relative z-10">
-      <h2 class="text-3xl md:text-4xl font-bold mb-6 leading-tight">
+      <h1 class="text-3xl md:text-4xl font-bold mb-6 leading-tight">
         ニッチな「あったらいいな」を<br class="md:hidden" />叶えるツール集
-      </h2>
+      </h1>
       <p class="text-lg opacity-80 leading-relaxed max-w-2xl mx-auto">
         個人開発者が作る、インストール不要のWeb便利アプリ。<br class="hidden md:inline" />すべて無料・登録なしで使えます。
       </p>
@@ -34,10 +58,10 @@ const categories = [...new Set(apps.map((app) => app.category))];
 
   <!-- アプリ一覧セクション -->
   <main id="apps" class="max-w-6xl mx-auto px-6 py-16">
-    <h3 class="text-2xl font-bold text-center mb-12 relative pb-4">
+    <h2 class="text-2xl font-bold text-center mb-12 relative pb-4">
       New Apps
       <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-12 h-1 bg-swell-blue rounded-full"></span>
-    </h3>
+    </h2>
 
     <div class="flex flex-col lg:flex-row gap-10 items-start">
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-10 flex-1 lg:order-1">
